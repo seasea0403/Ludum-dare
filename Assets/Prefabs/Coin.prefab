@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &9059877718447082393
 Transform:
   m_ObjectHideFlags: 0
@@ -29,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 3209070032899221889}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.17, z: 0.028717924}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 1.55, y: -2.21, z: 0.028717924}
+  m_LocalScale: {x: 0.85858, y: 0.85858, z: 0.85858}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -73,10 +73,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -2108814859
+  m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 4fffcc5fb82de80429756f300d3eef1a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 313d8ca41fa1c0f4a9d74a417d4105a9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -119,9 +119,9 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.009801534, y: 0}
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.9410731
 --- !u!114 &2212085491539750895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba75a4e5c99c109458fc405e96d97464, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fogSprite: {fileID: 0}
+  fogSprite: {fileID: 21300000, guid: f90cbfce5a3679e4eb1ed77353662307, type: 3}
   fogColor: {r: 1, g: 1, b: 1, a: 0.85}
   fogScale: 2
   fogSortingOrder: 50

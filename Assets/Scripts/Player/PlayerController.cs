@@ -22,10 +22,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float signalRadius   = 8f;
     [SerializeField] private GameObject signalWavePrefab;
 
-    [Header("射击")]
-    [SerializeField] private GameObject bulletPrefab;
+    [Header("射击（激光）")]
     [SerializeField] private Transform  firePoint;
     [SerializeField] private float      fireRate = 0.3f;
+
+    private LaserBeam laserBeam;
 
     [Header("血量")]
     [SerializeField] private int   maxHealth       = 3;
@@ -54,6 +55,14 @@ public class PlayerController : MonoBehaviour
         rb            = GetComponent<Rigidbody2D>();
         sr            = GetComponentInChildren<SpriteRenderer>();
         fogManager    = FindObjectOfType<FogManager>();
+        laserBeam     = GetComponentInChildren<LaserBeam>();
+        if (laserBeam == null)
+        {
+            var lbObj = new GameObject("LaserBeam");
+            lbObj.transform.SetParent(transform);
+            lbObj.transform.localPosition = Vector3.zero;
+            laserBeam = lbObj.AddComponent<LaserBeam>();
+        }
         CurrentHealth = maxHealth;
         startX        = transform.position.x;
 
@@ -158,18 +167,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // ───── 低频：Q 射子弹 ─────
+    // ───── 低频：Q 发射激光 ─────
     void HandleLowFrequency()
     {
         if (Input.GetKeyDown(KeyCode.Q) && fireTimer <= 0f)
         {
-            fireTimer = fireRate;
-            if (bulletPrefab && firePoint)
+            Vector3 origin = firePoint ? firePoint.position : transform.position;
+            if (laserBeam && laserBeam.Fire(origin))
             {
-                if (ObjectPool.Instance)
-                    ObjectPool.Instance.Get(bulletPrefab, firePoint.position, Quaternion.identity);
-                else
-                    Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
+                fireTimer = fireRate;
             }
         }
     }

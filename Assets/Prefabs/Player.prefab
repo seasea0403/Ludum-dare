@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 107255342607765303}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.06, z: 0}
+  m_LocalPosition: {x: 0, y: -1.97, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 2489211936915672482}
   - component: {fileID: 4744985996910606880}
   - component: {fileID: 5447403219605101241}
+  - component: {fileID: 8929917955540448710}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -146,7 +147,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.77019, y: 0.77019, z: 0.77019}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7109333403639780703}
@@ -229,7 +230,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  jumpForce: 11
+  jumpForce: 15
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -240,9 +241,8 @@ MonoBehaviour:
   lowJumpMultiplier: 2
   signalRadius: 8
   signalWavePrefab: {fileID: 0}
-  bulletPrefab: {fileID: 7692917423478392606, guid: 93984729151889948a2df8c977f387f4, type: 3}
   firePoint: {fileID: 7918847991247858650}
-  fireRate: 0.3
+  fireRate: 1
   maxHealth: 4
   invincibleTime: 1
 --- !u!95 &4744985996910606880
@@ -278,6 +278,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a43d72d999d4ff34c8fa8f9306bc21b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8929917955540448710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5437162627087825549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab087f6b2ecaae141a2ed26509c6af36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDistance: 15
+  beamDuration: 0.15
+  beamWidth: 0.08
+  beamColor: {r: 1, g: 0.3, b: 0.1, a: 0.9}
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &6347636784046601604
 GameObject:
   m_ObjectHideFlags: 0
@@ -303,7 +322,7 @@ Transform:
   m_GameObject: {fileID: 6347636784046601604}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.83, y: 0, z: 0}
+  m_LocalPosition: {x: 0.83, y: -1.14, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -48,4 +48,10 @@ public class FogManager : MonoBehaviour
     {
         EmitPulse(center, pulseRadius);
     }
+
+    /// <summary>供 SignalWave 调用 - 在指定点清除雾</summary>
+    public void EmitPulseAtPoint(Vector3 center, float radius)
+    {
+        EmitPulse(center, radius);
+    }
 }
