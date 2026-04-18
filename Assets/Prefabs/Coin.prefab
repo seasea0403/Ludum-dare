@@ -12,13 +12,14 @@ GameObject:
   - component: {fileID: 8620295785685277964}
   - component: {fileID: 6969529538382757565}
   - component: {fileID: 2212085491539750895}
+  - component: {fileID: 3552945222522413953}
   m_Layer: 0
   m_Name: Coin
   m_TagString: Coin
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &9059877718447082393
 Transform:
   m_ObjectHideFlags: 0
@@ -27,9 +28,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3209070032899221889}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.17, z: 0.028717924}
-  m_LocalScale: {x: 19.624464, y: 10.655626, z: 10.655626}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -135,3 +136,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bobSpeed: 2
   bobHeight: 0.15
+--- !u!114 &3552945222522413953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3209070032899221889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba75a4e5c99c109458fc405e96d97464, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fogSprite: {fileID: 0}
+  fogColor: {r: 1, g: 1, b: 1, a: 0.85}
+  fogScale: 2
+  fogSortingOrder: 50
+  revealDuration: 0.4

@@ -33,4 +33,9 @@ public static class GameEvents
     public const string FrequencyChanged  = "FrequencyChanged";
     public const string LevelCompleted    = "LevelCompleted";
     public const string DistanceUpdated   = "DistanceUpdated";
+    public const string CrownCollected    = "CrownCollected";
+    public const string CrownCountChanged = "CrownCountChanged";
+    public const string ChestOpened       = "ChestOpened";
+    public const string ShieldActivated   = "ShieldActivated";
+    public const string ShieldBroken      = "ShieldBroken";
 }

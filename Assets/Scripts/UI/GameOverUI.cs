@@ -52,7 +52,7 @@ public class GameOverUI : MonoBehaviour
         if (player && statsText)
             statsText.text = $"里程: {Mathf.FloorToInt(player.Distance)} m\n金币: {player.CoinCount}";
 
-        nextLevelButton.gameObject.SetActive(showNext && LevelManager.Instance.HasNextLevel);
+        nextLevelButton.gameObject.SetActive(showNext && LevelManager.Instance != null && LevelManager.Instance.HasNextLevel);
     }
 
     void OnRetry()

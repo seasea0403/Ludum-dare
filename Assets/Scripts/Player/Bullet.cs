@@ -23,8 +23,16 @@ public class Bullet : MonoBehaviour
     {
         if (other.CompareTag("Obstacle"))
         {
-            // 摧毁障碍物
-            Destroy(other.gameObject);
+            // 有雾的障碍物不会被子弹摧毁
+            var fog = other.GetComponent<FogCover>();
+            if (fog != null && !fog.IsRevealed)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            var obs = other.GetComponent<Obstacle>();
+            if (obs) obs.onDestr();
             Destroy(gameObject);
         }
     }

@@ -12,16 +12,20 @@ public class PlayerAnimator : MonoBehaviour
     private PlayerController controller;
     private Rigidbody2D      rb;
 
-    // Animator 参数哈希（用哈希比字符串查找更快）
+    // ── Animator 参数哈希 ──
     private static readonly int HashSpeed      = Animator.StringToHash("Speed");
     private static readonly int HashYVelocity  = Animator.StringToHash("YVelocity");
     private static readonly int HashGrounded   = Animator.StringToHash("Grounded");
+    private static readonly int HashJump       = Animator.StringToHash("Jump");
     private static readonly int HashShoot      = Animator.StringToHash("Shoot");
+    private static readonly int HashPulse      = Animator.StringToHash("Pulse");
     private static readonly int HashHit        = Animator.StringToHash("Hit");
     private static readonly int HashDead       = Animator.StringToHash("Dead");
+    private static readonly int HashSuccess    = Animator.StringToHash("Success");
 
-    private SignalFrequency lastFrequency;
-    private int             lastHealth;
+    private int lastHealth;
+    private bool isDead;
+    private bool wasGrounded = true;
 
     void Awake()
     {
@@ -29,25 +33,46 @@ public class PlayerAnimator : MonoBehaviour
         controller = GetComponent<PlayerController>();
         rb         = GetComponent<Rigidbody2D>();
 
-        lastFrequency = controller.CurrentFrequency;
-        lastHealth    = controller.CurrentHealth;
+        if (!anim)       Debug.LogError("PlayerAnimator: Animator 组件缺失!", this);
+        if (!controller) Debug.LogError("PlayerAnimator: PlayerController 组件缺失!", this);
+        if (!rb)         Debug.LogError("PlayerAnimator: Rigidbody2D 组件缺失!", this);
+    }
+
+    void Start()
+    {
+        lastHealth = controller.CurrentHealth;
+        // 订阅事件
+        EventBus.Subscribe(GameEvents.LevelCompleted, OnLevelCompleted);
+        EventBus.Subscribe(GameEvents.FrequencyChanged, OnFrequencyChanged);
+    }
+
+    void OnDestroy()
+    {
+        EventBus.Unsubscribe(GameEvents.LevelCompleted, OnLevelCompleted);
+        EventBus.Unsubscribe(GameEvents.FrequencyChanged, OnFrequencyChanged);
     }
 
     void Update()
     {
-        // ── 持续更新的参数 ──
+        if (isDead) return;
+
+        // ── 持续同步的参数 ──
         anim.SetFloat(HashSpeed,     Mathf.Abs(rb.velocity.x));
         anim.SetFloat(HashYVelocity, rb.velocity.y);
+        anim.SetBool(HashGrounded,   controller.IsGrounded);
 
-        // Grounded：用 YVelocity 接近 0 且速度不向下来近似判断（也可直接在 PlayerController 暴露 isGrounded）
-        bool grounded = Mathf.Abs(rb.velocity.y) < 0.05f;
-        anim.SetBool(HashGrounded, grounded);
+        // ── 跳跃（离地瞬间触发一次）──
+        if (wasGrounded && !controller.IsGrounded && rb.velocity.y > 0.1f)
+        {
+            anim.SetTrigger(HashJump);
+        }
+        wasGrounded = controller.IsGrounded;
 
         // ── 死亡 ──
         if (controller.CurrentHealth <= 0)
         {
+            isDead = true;
             anim.SetBool(HashDead, true);
-            enabled = false;   // 死后不再更新
             return;
         }
 
@@ -58,11 +83,36 @@ public class PlayerAnimator : MonoBehaviour
         }
         lastHealth = controller.CurrentHealth;
 
-        // ── 射击（低频模式下按 Q）──
+        // ── 射击（低频 + 按 Q）──
         if (controller.CurrentFrequency == SignalFrequency.Low
             && Input.GetKeyDown(KeyCode.Q))
         {
             anim.SetTrigger(HashShoot);
         }
+
+        // ── 脉冲（高频 + 按 Q）──
+        if (controller.CurrentFrequency == SignalFrequency.High
+            && Input.GetKeyDown(KeyCode.Q))
+        {
+            anim.SetTrigger(HashPulse);
+        }
+    }
+
+    // ── 高频脉冲动画（由 EventBus 触发也可，此处提供手动调用接口）──
+    public void PlayPulse()
+    {
+        if (!isDead) anim.SetTrigger(HashPulse);
+    }
+
+    // ── 通关成功 ──
+    private void OnLevelCompleted(object _)
+    {
+        if (!isDead) anim.SetBool(HashSuccess, true);
+    }
+
+    // ── 切换频段时可附加效果 ──
+    private void OnFrequencyChanged(object freq)
+    {
+        // 频段切换的视觉反馈可以在这里加额外逻辑
     }
 }

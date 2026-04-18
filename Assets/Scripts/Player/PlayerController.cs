@@ -13,14 +13,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float     jumpForce          = 11f;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Transform groundCheck;
-    [SerializeField] private float     groundCheckRadius  = 0.15f;
+    [SerializeField] private float     groundCheckRadius  = 0.3f;
     [SerializeField] private int       maxJumpCount       = 2;
     [SerializeField] private float     fallMultiplier     = 2.5f;
     [SerializeField] private float     lowJumpMultiplier  = 2f;
 
     [Header("信号")]
     [SerializeField] private float signalRadius   = 8f;
-    [SerializeField] private float signalInterval = 0.8f;
+    [SerializeField] private GameObject signalWavePrefab;
 
     [Header("射击")]
     [SerializeField] private GameObject bulletPrefab;
@@ -28,31 +28,49 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float      fireRate = 0.3f;
 
     [Header("血量")]
-    [SerializeField] private int   maxHealth       = 4;
-    [SerializeField] private float invincibleTime  = 1f;
+    [SerializeField] private int   maxHealth       = 3;
+    [SerializeField] private float invincibleTime  = 2f;
 
     public SignalFrequency CurrentFrequency { get; private set; } = SignalFrequency.High;
     public int   CurrentHealth { get; private set; }
     public int   CoinCount     { get; private set; }
+    public int   CrownCount    { get; private set; }
     public float Distance      { get; private set; }
+    public bool  IsGrounded    { get; private set; }
+    public bool  HasShield     { get; private set; }
 
     private Rigidbody2D    rb;
     private SpriteRenderer sr;
-    private VisionManager  visionManager;
-    private bool  isGrounded;
+    private FogManager     fogManager;
     private int   jumpCount;
     private float signalTimer;
     private float fireTimer;
     private bool  isInvincible;
     private float startX;
+    private Coroutine shieldRoutine;
 
     void Awake()
     {
         rb            = GetComponent<Rigidbody2D>();
         sr            = GetComponentInChildren<SpriteRenderer>();
-        visionManager = FindObjectOfType<VisionManager>();
+        fogManager    = FindObjectOfType<FogManager>();
         CurrentHealth = maxHealth;
         startX        = transform.position.x;
+
+        // 确保物理引擎在 transform 移动后自动同步碰撞体
+        Physics2D.autoSyncTransforms = true;
+    }
+
+    void OnEnable()
+    {
+        EventBus.Subscribe(GameEvents.ChestOpened, OnChestOpened);
+        EventBus.Subscribe(GameEvents.CrownCollected, OnCrownCollected);
+    }
+
+    void OnDisable()
+    {
+        EventBus.Unsubscribe(GameEvents.ChestOpened, OnChestOpened);
+        EventBus.Unsubscribe(GameEvents.CrownCollected, OnCrownCollected);
     }
 
     void Update()
@@ -88,14 +106,21 @@ public class PlayerController : MonoBehaviour
 
     void CheckGround()
     {
-        bool was = isGrounded;
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-        if (!was && isGrounded) jumpCount = 0;
+        bool was = IsGrounded;
+        // 从 groundCheck 位置向下发射短射线，检测是否碰到 Ground Layer
+        RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckRadius, groundLayer);
+        IsGrounded = hit.collider != null;
+
+        if (!was && IsGrounded) jumpCount = 0;
+
+        // 调试：在 Console 里确认检测状态（确认没问题后可以删掉这行）
+        if (was && !IsGrounded)
+            Debug.Log($"[GroundCheck] 离地! jumpCount={jumpCount} pos={groundCheck.position}");
     }
 
     void HandleJump()
     {
-        if (Input.GetButtonDown("Jump") && (isGrounded || jumpCount < maxJumpCount))
+        if (Input.GetButtonDown("Jump") && (IsGrounded || jumpCount < maxJumpCount))
         {
             rb.velocity = new Vector2(rb.velocity.x, 0f);
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
@@ -113,19 +138,21 @@ public class PlayerController : MonoBehaviour
             : SignalFrequency.High;
 
         EventBus.Publish(GameEvents.FrequencyChanged, CurrentFrequency);
-
-        if (CurrentFrequency == SignalFrequency.Low && visionManager)
-            visionManager.SetSignalActive(false);
     }
 
-    // ───── 高频：自动发信号照亮场景 ─────
+    // ───── 高频：Q 发脉冲清除白雾 + 生成信号波动画 ─────
     void HandleHighFrequency()
     {
-        signalTimer -= Time.deltaTime;
-        if (signalTimer <= 0f)
+        if (Input.GetKeyDown(KeyCode.Q) && fireTimer <= 0f)
         {
-            signalTimer = signalInterval;
-            if (visionManager) visionManager.EmitPulse(transform.position, signalRadius);
+            fireTimer = fireRate;
+            if (fogManager) fogManager.EmitPulse(transform.position, signalRadius);
+            if (signalWavePrefab)
+            {
+                var wave = Instantiate(signalWavePrefab, transform.position, Quaternion.identity);
+                var sw = wave.GetComponent<SignalWave>();
+                if (sw) sw.Init(signalRadius);
+            }
         }
     }
 
@@ -154,7 +181,16 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage()
     {
-        if (isInvincible) return;
+        if (isInvincible || HasShield) 
+        {
+            if (HasShield)
+            {
+                HasShield = false;
+                if (shieldRoutine != null) StopCoroutine(shieldRoutine);
+                EventBus.Publish(GameEvents.ShieldBroken);
+            }
+            return;
+        }
         CurrentHealth--;
         EventBus.Publish(GameEvents.PlayerHit, CurrentHealth);
         if (RunnerCamera.Instance) RunnerCamera.Instance.Shake();
@@ -170,14 +206,14 @@ public class PlayerController : MonoBehaviour
     IEnumerator InvincibleRoutine()
     {
         isInvincible = true;
-        float timer = 0f;
-        while (timer < invincibleTime)
-        {
-            sr.enabled = !sr.enabled;
-            yield return new WaitForSeconds(0.1f);
-            timer += 0.1f;
-        }
-        sr.enabled   = true;
+        // 半透明表示无敌状态
+        Color c = sr.color;
+        Color transparent = new Color(c.r, c.g, c.b, 0.35f);
+        sr.color = transparent;
+
+        yield return new WaitForSeconds(invincibleTime);
+
+        sr.color = new Color(c.r, c.g, c.b, 1f);
         isInvincible = false;
     }
 
@@ -194,16 +230,46 @@ public class PlayerController : MonoBehaviour
             CollectCoin();
             Destroy(other.gameObject);
         }
-        else if (other.CompareTag("LevelEnd"))
-        {
-            EventBus.Publish(GameEvents.LevelCompleted);
-        }
+        // LevelEnd 由 LevelEndTrigger 脚本独立广播事件，这里不重复发布
+        // Crown 和 Chest 自己处理碰撞并广播事件，PlayerController 通过 EventBus 监听
+    }
+
+    // ───── EventBus 回调（解耦）─────
+    private void OnChestOpened(object data)
+    {
+        var reward = data as ChestReward;
+        if (reward == null) return;
+
+        // 加金币
+        for (int i = 0; i < reward.coins; i++)
+            CollectCoin();
+
+        // 启动护盾
+        if (shieldRoutine != null) StopCoroutine(shieldRoutine);
+        shieldRoutine = StartCoroutine(ShieldRoutine(reward.shieldDuration));
+    }
+
+    private void OnCrownCollected(object data)
+    {
+        CrownCount++;
+        EventBus.Publish(GameEvents.CrownCountChanged, CrownCount);
+    }
+
+    IEnumerator ShieldRoutine(float duration)
+    {
+        HasShield = true;
+        EventBus.Publish(GameEvents.ShieldActivated, duration);
+        yield return new WaitForSeconds(duration);
+        HasShield = false;
+        EventBus.Publish(GameEvents.ShieldBroken);
     }
 
     void OnDrawGizmosSelected()
     {
         if (groundCheck == null) return;
+        // 画射线方向和长度
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * groundCheckRadius);
+        Gizmos.DrawWireSphere(groundCheck.position + Vector3.down * groundCheckRadius, 0.05f);
     }
 }
