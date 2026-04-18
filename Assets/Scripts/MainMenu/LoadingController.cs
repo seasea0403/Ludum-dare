@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -17,7 +18,7 @@ public class LoadingController : MonoBehaviour
     bool firstTime = true;
     void Start()
     {
-        if(firstTime)
+        if (firstTime)
         {
             firstTime = false;
             StartPage.SetActive(true);
@@ -26,7 +27,7 @@ public class LoadingController : MonoBehaviour
     }
     IEnumerator WaitForPress()
     {
-        while(!Input.anyKeyDown)
+        while(!Input.anyKeyDown||ResetDataButton.mouseOn)
         {
             yield return null;
         }
