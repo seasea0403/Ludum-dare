@@ -39,6 +39,7 @@ public class GameOverUI : MonoBehaviour
 
     void OnLevelCompleted(object data)
     {
+
         Show("关卡完成!", true);
     }
 
