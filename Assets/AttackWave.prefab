@@ -101,6 +101,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 7851209927665044868}
   moveSpeed: 25
   disappearSpeed: 2.5
+  collider2: {fileID: 3283863578655672925}
 --- !u!61 &3283863578655672925
 BoxCollider2D:
   m_ObjectHideFlags: 0
