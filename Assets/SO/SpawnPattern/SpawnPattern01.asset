@@ -34,8 +34,8 @@ MonoBehaviour:
     arcHeight: 0
     hasCoinAround: 1
     coinAroundCount: 2
-    coinAroundArcHeight: 1.8
-    coinAroundSpacing: 1.5
+    coinAroundArcHeight: 2.2
+    coinAroundSpacing: 1.3
   - type: 0
     hasFog: 1
     isIndestructible: 0
@@ -146,10 +146,10 @@ MonoBehaviour:
     coinAroundSpacing: 1.5
   - type: 0
     hasFog: 1
-    isIndestructible: 1
+    isIndestructible: 0
     coinCount: 8
     arcHeight: 2.1
-    hasCoinAround: 0
+    hasCoinAround: 1
     coinAroundCount: 3
     coinAroundArcHeight: 0
     coinAroundSpacing: 1.5

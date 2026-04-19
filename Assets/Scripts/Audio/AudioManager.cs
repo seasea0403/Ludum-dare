@@ -127,6 +127,12 @@ public class AudioManager : MonoBehaviour
     /// <summary>播放关卡开头文字音效</summary>
     public void PlayLevelIntroText()   => PlaySFX(sfxLevelIntroText);
     
+    /// <summary>播放皇冠收集音效（用于UI结算动画）</summary>
+    public void PlayCrownCollect()     => PlaySFX(sfxCrownCollect);
+    
+    /// <summary>播放玩家受击/扣血音效（用于UI结算动画）</summary>
+    public void PlayPlayerHit()        => PlaySFX(sfxHit);
+
     /// <summary>开始播放打字音效（长音效，持续播放）</summary>
     public void PlayTypingStart()
     {

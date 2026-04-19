@@ -13,16 +13,24 @@ public class GameOverUI : MonoBehaviour
     [SerializeField] private Button          victoryNextButton;
     [SerializeField] private Button          victoryRetryButton;
 
+    [Header("胜利面板 - 皇冠动画")]
+    [SerializeField] private Image[]         victoryCrowns;
+    [SerializeField] private Sprite          crownActiveSprite;
+    [SerializeField] private Sprite          crownInactiveSprite;
+
     [Header("失败面板")]
     [SerializeField] private GameObject      defeatPanel;
     [SerializeField] private TextMeshProUGUI defeatStatsText;
     [SerializeField] private Button          defeatRetryButton;
+    
+    [Header("失败面板 - 生命动画")]
+    [SerializeField] private Image[]         defeatLives;
+    [SerializeField] private Sprite          lifeActiveSprite;
+    [SerializeField] private Sprite          lifeInactiveSprite;
 
-    [Header("庆祝动画UI")]
-    [SerializeField] private Animator celebrationAnimator;  // UI Image 上的 Animator，循环播放
-
-    [Header("延迟设置")]
+    [Header("延迟与动画设置")]
     [SerializeField] private float delayBeforeShow = 1f;
+    [SerializeField] private float uiAnimationInterval = 0.3f;
 
     void OnEnable()
     {
@@ -69,30 +77,89 @@ public class GameOverUI : MonoBehaviour
         
         yield return new WaitForSeconds(delayBeforeShow);
 
+        // 动画播完后暂停游戏并弹窗
+        Time.timeScale = 0f;
+        
         if (isVictory)
         {
             if (victoryPanel) victoryPanel.SetActive(true);
-            // 在暂停游戏前启动庆祝动画
-            if (celebrationAnimator)
-            {
-                celebrationAnimator.gameObject.SetActive(true);
-                // 直接激活，让动画自动从默认状态播放（需确保 Animator Controller 的 Entry 连到循环动画）
-                // 不使用 SetTrigger，避免参数不存在的问题
-            }
             if (player && victoryStatsText)
                 victoryStatsText.text = $"{player.CoinCount}";
             if (victoryNextButton)
                 victoryNextButton.gameObject.SetActive(LevelManager.Instance != null && LevelManager.Instance.HasNextLevel);
+            
+            // 播放皇冠结算动画
+            StartCoroutine(AnimateVictoryCrowns(player ? player.CrownCount : 0));
         }
         else
         {
             if (defeatPanel) defeatPanel.SetActive(true);
             if (player && defeatStatsText)
                 defeatStatsText.text = $"{player.CoinCount}";
+            
+            // 播放失败扣血动画
+            StartCoroutine(AnimateDefeatLives());
+        }
+    }
+
+    private System.Collections.IEnumerator AnimateVictoryCrowns(int crownCount)
+    {
+        // 1. 初始化所有皇冠为灰色（未收集）
+        if (victoryCrowns != null)
+        {
+            for (int i = 0; i < victoryCrowns.Length; i++)
+            {
+                if (victoryCrowns[i] != null) 
+                    victoryCrowns[i].sprite = crownInactiveSprite;
+            }
         }
 
-        // 最后再暂停游戏，此时动画已启动
-        Time.timeScale = 0f;
+        // 2. 等待面板显示一小会儿再开始动画
+        yield return new WaitForSecondsRealtime(uiAnimationInterval);
+
+        // 3. 根据收集数量依次点亮
+        if (victoryCrowns != null)
+        {
+            for (int i = 0; i < crownCount && i < victoryCrowns.Length; i++)
+            {
+                if (victoryCrowns[i] != null && crownActiveSprite != null)
+                {
+                    victoryCrowns[i].sprite = crownActiveSprite;
+                    if (AudioManager.Instance) AudioManager.Instance.PlayCrownCollect();
+                }
+                yield return new WaitForSecondsRealtime(uiAnimationInterval);
+            }
+        }
+    }
+
+    private System.Collections.IEnumerator AnimateDefeatLives()
+    {
+        // 1. 初始化所有生命为红色（满血）
+        if (defeatLives != null)
+        {
+            for (int i = 0; i < defeatLives.Length; i++)
+            {
+                if (defeatLives[i] != null) 
+                    defeatLives[i].sprite = lifeActiveSprite;
+            }
+        }
+
+        // 2. 等待面板显示一小会儿再开始动画
+        yield return new WaitForSecondsRealtime(uiAnimationInterval);
+
+        // 3. 依次变灰（扣血）
+        if (defeatLives != null)
+        {
+            for (int i = 0; i < defeatLives.Length; i++)
+            {
+                if (defeatLives[i] != null && lifeInactiveSprite != null)
+                {
+                    defeatLives[i].sprite = lifeInactiveSprite;
+                    if (AudioManager.Instance) AudioManager.Instance.PlayPlayerHit();
+                }
+                yield return new WaitForSecondsRealtime(uiAnimationInterval);
+            }
+        }
     }
 
     void OnRetry()
