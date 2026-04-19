@@ -173,5 +173,8 @@ public class LevelManager : MonoBehaviour
 
         var playerAnim = FindObjectOfType<PlayerAnimator>();
         if (playerAnim) playerAnim.ResetState();
+
+        var parallax = FindObjectOfType<ParallaxBackground>();
+        if (parallax) parallax.ResetBackground();
     }
 }

@@ -19,12 +19,31 @@ public class ParallaxBackground : MonoBehaviour
     private float currentPanelWidth;       // 当前生效的背景宽度
     private Camera cam;
     private float lastCamX;
+    private Vector3[] initialPanelPositions;
 
     void Awake()
     {
         panelRenderers = new SpriteRenderer[bgPanels.Length];
+        initialPanelPositions = new Vector3[bgPanels.Length];
+
         for (int i = 0; i < bgPanels.Length; i++)
+        {
             panelRenderers[i] = bgPanels[i].GetComponent<SpriteRenderer>();
+            initialPanelPositions[i] = bgPanels[i].position;
+        }
+    }
+
+    /// <summary>重置背景板到初始位置（跟随 LevelManager 一起调用）</summary>
+    public void ResetBackground()
+    {
+        if (cam != null)
+            lastCamX = cam.transform.position.x;
+            
+        for (int i = 0; i < bgPanels.Length; i++)
+        {
+            if (bgPanels[i] != null)
+                bgPanels[i].position = initialPanelPositions[i];
+        }
     }
 
     void Start()
