@@ -17,15 +17,23 @@ MonoBehaviour:
   maxSpacing: 20
   coinSpacing: 1.5
   entries:
+  - type: 1
+    hasFog: 0
+    coinCount: 8
+    arcHeight: 0
+  - type: 3
+    hasFog: 1
+    coinCount: 8
+    arcHeight: 0
   - type: 0
-    fogChance: 0
+    hasFog: 0
     coinCount: 0
     arcHeight: 0
-  - type: 1
-    fogChance: 0
-    coinCount: 8
-    arcHeight: 0.38
   - type: 2
-    fogChance: 0
+    hasFog: 0
     coinCount: 8
-    arcHeight: 0.38
+    arcHeight: 1.1
+  - type: 1
+    hasFog: 0
+    coinCount: 8
+    arcHeight: 2.1

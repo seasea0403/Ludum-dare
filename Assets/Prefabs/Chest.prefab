@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8178654854211443555}
   - component: {fileID: 2890189015725820623}
   - component: {fileID: 2502429018966485464}
-  - component: {fileID: 7487427240136426983}
   - component: {fileID: 5795768940926625880}
   m_Layer: 0
   m_Name: Chest
@@ -19,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8178654854211443555
 Transform:
   m_ObjectHideFlags: 0
@@ -122,23 +121,6 @@ CircleCollider2D:
   m_Offset: {x: -0.12778312, y: 0.11865631}
   serializedVersion: 2
   m_Radius: 1.9147472
---- !u!114 &7487427240136426983
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8725583896263346798}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba75a4e5c99c109458fc405e96d97464, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fogSprite: {fileID: 21300000, guid: f90cbfce5a3679e4eb1ed77353662307, type: 3}
-  fogColor: {r: 1, g: 1, b: 1, a: 0.85}
-  fogScale: 2
-  fogSortingOrder: 50
-  revealDuration: 0.4
 --- !u!114 &5795768940926625880
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 608dd75ed9b48f64d8c875e675f97663, type: 3}
   m_Name: Level_01
   m_EditorClassIdentifier: 
-  levelIndex: 0
+  levelIndex: 1
   segmentA:
     backgroundSprite: {fileID: 21300000, guid: 48a0e551b36ca4e4ab5ba4355beb53c7, type: 3}
     destructibleObstacleSprites:
@@ -22,7 +22,7 @@ MonoBehaviour:
     indestructibleObstacleSprites:
     - {fileID: 21300000, guid: ad430a4ce74dfa94486352f49848a021, type: 3}
     - {fileID: 21300000, guid: b589fed26fd56894f9e8ed0bef57bbcb, type: 3}
-    cycleCount: 5
+    cycleCount: 10
   transitionSprite: {fileID: 7482667652216324306, guid: 4fffcc5fb82de80429756f300d3eef1a, type: 3}
   transitionWidth: 20
   segmentB:

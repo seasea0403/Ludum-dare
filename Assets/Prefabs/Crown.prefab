@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1581382522825003813}
   m_Layer: 0
   m_Name: Crown
-  m_TagString: Obstacle
+  m_TagString: Crown
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
