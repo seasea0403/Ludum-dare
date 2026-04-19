@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 608dd75ed9b48f64d8c875e675f97663, type: 3}
+  m_Name: Level_03
+  m_EditorClassIdentifier: 
+  levelIndex: 2
+  segmentA:
+    backgroundSprite: {fileID: 21300000, guid: efe056c93cb410342be342364f9149a4, type: 3}
+    destructibleObstacleSprites: []
+    indestructibleObstacleSprites: []
+    cycleCount: 5
+  transitionSprite: {fileID: 7482667652216324306, guid: 4fffcc5fb82de80429756f300d3eef1a, type: 3}
+  transitionWidth: 20
+  segmentB:
+    backgroundSprite: {fileID: 21300000, guid: efe056c93cb410342be342364f9149a4, type: 3}
+    destructibleObstacleSprites: []
+    indestructibleObstacleSprites: []
+    cycleCount: 10
+  spawnPattern: {fileID: 11400000, guid: af08d4f94873ca14bba872d7eab620ec, type: 2}

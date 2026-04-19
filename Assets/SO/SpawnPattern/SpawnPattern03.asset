@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da21e3a14c027148abfb55542d3b6d0, type: 3}
+  m_Name: SpawnPattern03
+  m_EditorClassIdentifier: 
+  loop: 1
+  minSpacing: 11
+  maxSpacing: 20
+  coinSpacing: 1.5
+  entries:
+  - type: 0
+    fogChance: 0
+    coinCount: 0
+    arcHeight: 0
+  - type: 1
+    fogChance: 0
+    coinCount: 8
+    arcHeight: 0.38
+  - type: 2
+    fogChance: 0
+    coinCount: 8
+    arcHeight: 0.38
