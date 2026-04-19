@@ -128,7 +128,7 @@ MonoBehaviour:
   signalRadius: 8
   firePoint: {fileID: 3108942919754509804}
   fireRate: 1
-  maxHealth: 4
+  maxHealth: 3
   invincibleTime: 1
 --- !u!95 &6240632898251085912
 Animator:

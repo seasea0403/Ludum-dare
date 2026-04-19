@@ -9,15 +9,13 @@ public class Obstacle : MonoBehaviour
     [Header("Indestructible")]
     [SerializeField] private bool isIndestructible;
 
-    [Header("Shatter Settings")]
-    [SerializeField] private int   fragmentsPerAxis = 3;   // 3x3 = 9 fragments
-    [SerializeField] private float shatterForce     = 5f;
-    [SerializeField] private float fragmentLifeTime = 0.8f;
-    [SerializeField] private Color fragmentTint     = new Color(1f, 0.6f, 0.2f, 1f);
+    [Header("Destruction Animation")]
+    [SerializeField] private float destructionAnimationDuration = 0.6f;
 
     private SpriteRenderer sr;
     private Collider2D col;
-    private bool isShattered;
+    private Animator animator;
+    private bool isDestroying;
 
     /// <summary>是否为不可摧毁障碍物</summary>
     public bool IsIndestructible => isIndestructible;
@@ -41,11 +39,16 @@ public class Obstacle : MonoBehaviour
     {
         sr  = GetComponent<SpriteRenderer>();
         col = GetComponent<Collider2D>();
+        animator = GetComponent<Animator>();
     }
 
     void OnEnable()
     {
-        isShattered = false;
+        isDestroying = false;
+
+        // 禁用Animator，防止在Idle状态下Animator锁定覆盖我们动态设置的Sprite
+        if (animator) animator.enabled = false;
+
         if (sr)
         {
             sr.enabled = true;
@@ -68,22 +71,26 @@ public class Obstacle : MonoBehaviour
             sr.sprite = variants[Random.Range(0, variants.Length)];
     }
 
-    /// <summary>Called by laser — break into fragments then return to pool</summary>
+    /// <summary>Called by laser — play destruction animation</summary>
     public void Shatter()
     {
-        if (isShattered) return;
+        if (isDestroying) return;
         if (isIndestructible) return;  // 不可摧毁障碍物无法被击碎
-        isShattered = true;
-
-        // Hide the original
-        if (sr) sr.enabled = false;
+        
+        isDestroying = true;
+        
+        // Disable collider so obstacle won't hurt the player during destruction
         if (col) col.enabled = false;
-
-        // Spawn fragment sprites
-        SpawnFragments();
-
-        // Return to pool after fragments are done
-        StartCoroutine(ReturnAfterDelay(fragmentLifeTime + 0.1f));
+        
+        // Play destruction animation
+        if (animator)
+        {
+            animator.enabled = true; // 启用Animator以播放动画
+            animator.SetTrigger("Destroy");
+        }
+        
+        // Wait for animation to finish, then destroy
+        StartCoroutine(WaitForDestructionAnimation());
     }
 
     /// <summary>Called by bullet (legacy) — just return to pool</summary>
@@ -95,98 +102,32 @@ public class Obstacle : MonoBehaviour
             Destroy(gameObject);
     }
 
-    void SpawnFragments()
+    IEnumerator WaitForDestructionAnimation()
     {
-        if (sr == null || sr.sprite == null) { onDestr(); return; }
-
-        Sprite sprite  = sr.sprite;
-        Rect texRect   = sprite.textureRect;
-        Texture2D tex  = sprite.texture;
-        float ppu      = sprite.pixelsPerUnit;
-
-        float fragW = texRect.width  / fragmentsPerAxis;
-        float fragH = texRect.height / fragmentsPerAxis;
-        float worldW = fragW / ppu;
-        float worldH = fragH / ppu;
-
-        Vector3 origin = transform.position;
-        // Offset so fragments appear centered on original
-        Vector3 startOffset = new Vector3(
-            -(texRect.width / ppu) * 0.5f + worldW * 0.5f,
-            -(texRect.height / ppu) * 0.5f + worldH * 0.5f,
-            0f
-        );
-
-        for (int y = 0; y < fragmentsPerAxis; y++)
+        // If animator exists, wait for the destroy animation to finish
+        if (animator)
         {
-            for (int x = 0; x < fragmentsPerAxis; x++)
-            {
-                // Create fragment sprite from sub-region
-                Rect subRect = new Rect(
-                    texRect.x + x * fragW,
-                    texRect.y + y * fragH,
-                    fragW, fragH
-                );
-                Vector2 pivot = new Vector2(0.5f, 0.5f);
-                Sprite fragSprite = Sprite.Create(tex, subRect, pivot, ppu);
-
-                Vector3 pos = origin + startOffset + new Vector3(x * worldW, y * worldH, 0f);
-
-                var fragObj = new GameObject("Frag");
-                fragObj.transform.position = pos;
-
-                var fragSR = fragObj.AddComponent<SpriteRenderer>();
-                fragSR.sprite       = fragSprite;
-                fragSR.color        = fragmentTint;
-                fragSR.sortingOrder = sr.sortingOrder + 1;
-
-                var fragRB = fragObj.AddComponent<Rigidbody2D>();
-                fragRB.gravityScale = 2f;
-                // Scatter outward from center
-                Vector2 dir = ((Vector2)(pos - origin)).normalized + Random.insideUnitCircle * 0.5f;
-                fragRB.velocity = dir * shatterForce;
-                fragRB.angularVelocity = Random.Range(-360f, 360f);
-
-                // Fade & destroy
-                StartCoroutine(FadeFragment(fragObj, fragSR, fragmentLifeTime));
-            }
+            yield return new WaitForSeconds(destructionAnimationDuration);
         }
-    }
-
-    IEnumerator FadeFragment(GameObject obj, SpriteRenderer fragSR, float duration)
-    {
-        float timer = 0f;
-        Color startColor = fragSR.color;
-
-        while (timer < duration)
+        else
         {
-            timer += Time.deltaTime;
-            float t = timer / duration;
-
-            // Shrink and fade
-            if (obj == null) yield break;
-            obj.transform.localScale = Vector3.one * Mathf.Lerp(1f, 0.2f, t);
-            Color c = startColor;
-            c.a = Mathf.Lerp(1f, 0f, t);
-            fragSR.color = c;
-
-            yield return null;
+            // Fallback if no animator
+            yield return new WaitForSeconds(0.1f);
         }
-
-        if (obj != null) Destroy(obj);
-    }
-
-    IEnumerator ReturnAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
+        
+        // Return to pool or destroy
         if (ObjectPool.Instance)
             ObjectPool.Instance.Return(gameObject);
         else
             Destroy(gameObject);
     }
 
+
     void OnCollisionEnter2D(Collision2D collision)
     {
+        // Don't damage if currently being destroyed
+        if (isDestroying) return;
+        
         PlayerController player = collision.collider.GetComponent<PlayerController>();
         if (player != null)
             player.TakeDamage();
@@ -194,6 +135,9 @@ public class Obstacle : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        // Don't damage if currently being destroyed
+        if (isDestroying) return;
+        
         PlayerController player = other.GetComponent<PlayerController>();
         if (player != null)
             player.TakeDamage();

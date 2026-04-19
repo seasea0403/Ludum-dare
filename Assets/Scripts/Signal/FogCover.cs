@@ -27,35 +27,47 @@ public class FogCover : MonoBehaviour
     public void SetFogSprite(Sprite sprite)
     {
         fogSprite = sprite;
+        if (fogRenderer != null)
+        {
+            fogRenderer.sprite = sprite;
+        }
     }
 
-    void Start()
+    void OnEnable()
     {
+        isRevealed = false;
+        
+        if (fogChild != null)
+        {
+            Destroy(fogChild);
+            fogChild = null;
+        }
+
         CreateFogVisual();
         if (FogManager.Instance)
             FogManager.Instance.Register(this);
     }
 
-    void OnDestroy()
+    void OnDisable()
     {
         if (FogManager.Instance)
             FogManager.Instance.Unregister(this);
 
-        // 清理雾子物体（可能已被 RevealRoutine 销毁）
-        if (fogChild != null)
-            DestroyImmediate(fogChild);
-
-        // 未被脉冲揭示时恢复父物体透明度，确保池复用正常
-        if (!isRevealed)
+        // 恢复父物体透明度，确保池复用正常
+        SpriteRenderer parentSR = GetComponent<SpriteRenderer>();
+        if (parentSR != null)
         {
-            SpriteRenderer parentSR = GetComponent<SpriteRenderer>();
-            if (parentSR != null)
-            {
-                Color c = parentSR.color;
-                c.a = 1f;
-                parentSR.color = c;
-            }
+            Color c = parentSR.color;
+            c.a = 1f;
+            parentSR.color = c;
         }
+    }
+
+    void OnDestroy()
+    {
+        // 兜底清理（虽然通常被 OnDisable 处理了）
+        if (fogChild != null)
+            Destroy(fogChild);
     }
 
     void CreateFogVisual()
@@ -84,7 +96,7 @@ public class FogCover : MonoBehaviour
     /// <summary>被高频脉冲清除时调用</summary>
     public void Reveal()
     {
-        if (isRevealed) return;
+        if (isRevealed || !gameObject.activeInHierarchy) return;
         isRevealed = true;
         StartCoroutine(RevealRoutine());
     }

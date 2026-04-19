@@ -231,13 +231,11 @@ public class TerrainChunker : MonoBehaviour
 
         if (!hasFog)
         {
-            if (existing != null) DestroyImmediate(existing);
+            if (existing != null) Destroy(existing);
             return;
         }
 
-        if (existing != null) return;
-
-        var fog = obj.AddComponent<FogCover>();
+        var fog = existing != null ? existing : obj.AddComponent<FogCover>();
         if (fogSprite) fog.SetFogSprite(fogSprite);
     }
 
