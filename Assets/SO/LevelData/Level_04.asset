@@ -50,4 +50,4 @@ MonoBehaviour:
     indestructibleObstacleSprites:
     - {fileID: 21300000, guid: 532c14d65d5154e45869b95b99c7419f, type: 3}
     cycleCount: 10
-  spawnPattern: {fileID: 11400000, guid: e7f3b923c4a432a4c91c5d4ba29660cb, type: 2}
+  spawnPattern: {fileID: 11400000, guid: 91f19de053e19c34cbdc9c43f772d542, type: 2}

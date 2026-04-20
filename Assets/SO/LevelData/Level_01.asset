@@ -18,7 +18,7 @@ MonoBehaviour:
   introText: The road back to the warmest days of my life.
   subtitleLines:
   - text: 'I died in this very hospital, '
-    delayAfter: 10
+    delayAfter: 1
   - text: just a few floors above where I was born.
     delayAfter: 10
   - text: "I walked a lifetime\u2019s journey, "
