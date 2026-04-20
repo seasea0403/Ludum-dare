@@ -16,19 +16,20 @@ MonoBehaviour:
   introAnimator: {fileID: 0}
   introImage: {fileID: 0}
   introText: Two signals merge into one eternal peace.
+  introAnimBgColor: {r: 1, g: 1, b: 1, a: 1}
   introResultBgColor: {r: 1, g: 1, b: 1, a: 1}
   polaroidSprite: {fileID: 0}
   subtitleLines:
   - text: I died in this old hospital,
-    delayAfter: 3
+    delayAfter: 0
   - text: just a few floors above my birth.
-    delayAfter: 3
+    delayAfter: 0
   - text: I roamed through all my lifetime,
-    delayAfter: 3
+    delayAfter: 0
   - text: back to the origin of earth.
-    delayAfter: 3
+    delayAfter: 0
   - text: My heart still holds my dear cat,
-    delayAfter: 3
+    delayAfter: 0
   - text: who waits for me at home.
     delayAfter: 100
   segmentA:
@@ -42,6 +43,7 @@ MonoBehaviour:
     indestructibleObstacleSprites: []
     cycleCount: 10
   spawnPattern: {fileID: 11400000, guid: 71d3a954ab9a7724899ea7f83e12b126, type: 2}
+  isTutorial: 0
   isFinalLevel: 1
   photoSprites:
   - {fileID: 21300000, guid: 17e6b6c8a6952294c93bc2db5b23e94b, type: 3}

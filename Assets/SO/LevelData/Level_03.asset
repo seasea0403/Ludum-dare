@@ -13,22 +13,23 @@ MonoBehaviour:
   m_Name: Level_03
   m_EditorClassIdentifier: 
   levelIndex: 3
-  introAnimator: {fileID: 0}
-  introImage: {fileID: 0}
+  introAnimator: {fileID: 9100000, guid: 4b3748241cdb5a84fbf7b430ea23e2f7, type: 2}
+  introImage: {fileID: 21300000, guid: 8db45e194f78b194f951f7b883e08fc8, type: 3}
   introText: Lost in the noise, but still chasing a faint signal.
-  introResultBgColor: {r: 1, g: 1, b: 1, a: 1}
+  introAnimBgColor: {r: 0.6862745, g: 0.8352941, b: 0.89411765, a: 1}
+  introResultBgColor: {r: 0.34117648, g: 0.54901963, b: 0.627451, a: 1}
   polaroidSprite: {fileID: 21300000, guid: 24742b85e7e4494468138fbdf3045c0f, type: 3}
   subtitleLines:
   - text: I rushed along this hard road for years,
-    delayAfter: 3
+    delayAfter: 6
   - text: too worn to gaze at the moon.
-    delayAfter: 3
+    delayAfter: 6
   - text: "I sought life\u2019s faint hidden meaning,"
-    delayAfter: 3
+    delayAfter: 6
   - text: chasing goals that faded soon.
-    delayAfter: 3
+    delayAfter: 6
   - text: I learned plain living is
-    delayAfter: 3
+    delayAfter: 6
   - text: the most precious boon.
     delayAfter: 100
   segmentA:
@@ -39,7 +40,7 @@ MonoBehaviour:
     indestructibleObstacleSprites:
     - {fileID: 21300000, guid: b07c5a3e9a97a78498e8abcf76216e05, type: 3}
     - {fileID: 21300000, guid: f46d91ae9a1a42f4fac08a26e00c962c, type: 3}
-    cycleCount: 10
+    cycleCount: 7
   segmentB:
     backgroundSprite: {fileID: 21300000, guid: cef1b9fff39e64c48bdb6dcfbad8f4f5, type: 3}
     destructibleObstacleSprites:

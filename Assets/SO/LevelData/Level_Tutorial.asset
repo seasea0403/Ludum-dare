@@ -16,13 +16,16 @@ MonoBehaviour:
   introAnimator: {fileID: 0}
   introImage: {fileID: 0}
   introText: 
+  introAnimBgColor: {r: 1, g: 1, b: 1, a: 1}
   introResultBgColor: {r: 1, g: 1, b: 1, a: 1}
   polaroidSprite: {fileID: 0}
   subtitleLines: []
   segmentA:
-    backgroundSprite: {fileID: 0}
-    destructibleObstacleSprites: []
-    indestructibleObstacleSprites: []
+    backgroundSprite: {fileID: 21300000, guid: 48a0e551b36ca4e4ab5ba4355beb53c7, type: 3}
+    destructibleObstacleSprites:
+    - {fileID: 21300000, guid: 4c5ea77250438a945a1eb74330af7cdb, type: 3}
+    indestructibleObstacleSprites:
+    - {fileID: 21300000, guid: ad430a4ce74dfa94486352f49848a021, type: 3}
     cycleCount: 10
   segmentB:
     backgroundSprite: {fileID: 0}

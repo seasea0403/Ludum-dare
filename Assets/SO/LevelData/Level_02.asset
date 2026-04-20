@@ -16,19 +16,20 @@ MonoBehaviour:
   introAnimator: {fileID: 9100000, guid: f5f915e2284adbd448370bb6127cae7f, type: 2}
   introImage: {fileID: 21300000, guid: 994e3c1070b48894e9c4971e2be04788, type: 3}
   introText: Every step hums a signal of our youthful days.
-  introResultBgColor: {r: 1, g: 1, b: 1, a: 1}
+  introAnimBgColor: {r: 0.78039217, g: 0.9019608, b: 0.8509804, a: 1}
+  introResultBgColor: {r: 0.32156864, g: 0.49803922, b: 0.42745098, a: 1}
   polaroidSprite: {fileID: 21300000, guid: ffbb3c1a09d641a4eabce43efb647668, type: 3}
   subtitleLines:
   - text: I miss old school hallways
-    delayAfter: 3
+    delayAfter: 6
   - text: where lost time and friendship fade.
-    delayAfter: 3
+    delayAfter: 6
   - text: I walked without fear back then,
-    delayAfter: 3
+    delayAfter: 6
   - text: hope in my heart was laid.
-    delayAfter: 3
+    delayAfter: 6
   - text: My fearless young soul
-    delayAfter: 3
+    delayAfter: 6
   - text: was the best treasure I made.
     delayAfter: 100
   segmentA:
@@ -39,7 +40,7 @@ MonoBehaviour:
     indestructibleObstacleSprites:
     - {fileID: 21300000, guid: 4d93bb6c600cfcb4e9936170c73079af, type: 3}
     - {fileID: 21300000, guid: 750585351744f464e97dfd0ccc724894, type: 3}
-    cycleCount: 10
+    cycleCount: 7
   segmentB:
     backgroundSprite: {fileID: 21300000, guid: 3783cf1a592cab54397bf5e31397c537, type: 3}
     destructibleObstacleSprites:
