@@ -16,19 +16,21 @@ MonoBehaviour:
   introAnimator: {fileID: 9100000, guid: f5f915e2284adbd448370bb6127cae7f, type: 2}
   introImage: {fileID: 21300000, guid: 994e3c1070b48894e9c4971e2be04788, type: 3}
   introText: Every step hums a signal of our youthful days.
+  introResultBgColor: {r: 1, g: 1, b: 1, a: 1}
+  polaroidSprite: {fileID: 0}
   subtitleLines:
-  - text: 'Later, I spent my years in the countryside yard, '
-    delayAfter: 10
-  - text: and bathed in the warm sunlight.
-    delayAfter: 10
-  - text: "No papers, no reports\u2014"
-    delayAfter: 10
-  - text: "only wheat in the wind and my cat\u2019s soft purr."
-    delayAfter: 10
-  - text: 'Those were my peaceful, quiet twilight years, '
-    delayAfter: 10
-  - text: wrapped in gentle signals.
-    delayAfter: 10
+  - text: I miss old school hallways
+    delayAfter: 3
+  - text: where lost time and friendship fade.
+    delayAfter: 3
+  - text: I walked without fear back then,
+    delayAfter: 3
+  - text: hope in my heart was laid.
+    delayAfter: 3
+  - text: My fearless young soul
+    delayAfter: 3
+  - text: was the best treasure I made.
+    delayAfter: 100
   segmentA:
     backgroundSprite: {fileID: 21300000, guid: d77b025f2d60b2945ba576a8717e5aa9, type: 3}
     destructibleObstacleSprites:
@@ -48,3 +50,7 @@ MonoBehaviour:
     - {fileID: 0}
     cycleCount: 10
   spawnPattern: {fileID: 11400000, guid: f31be4dd798ff064f98669a0bca0a9a1, type: 2}
+  isFinalLevel: 0
+  photoSprites: []
+  photoBubblePrefab: {fileID: 0}
+  catPrefab: {fileID: 0}

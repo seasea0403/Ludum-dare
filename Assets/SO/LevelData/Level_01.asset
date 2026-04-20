@@ -19,17 +19,17 @@ MonoBehaviour:
   introResultBgColor: {r: 0.81761, g: 0.665915, b: 0.665915, a: 1}
   polaroidSprite: {fileID: 21300000, guid: 1f26e2c64a7431241b3e191b0360e31c, type: 3}
   subtitleLines:
-  - text: 'I died in this very hospital, '
-    delayAfter: 1
-  - text: just a few floors above where I was born.
-    delayAfter: 10
-  - text: "I walked a lifetime\u2019s journey, "
-    delayAfter: 10
-  - text: only to return to where it all began.
-    delayAfter: 10
-  - text: "The only signal I couldn\u2019t let go was my cat, "
-    delayAfter: 10
-  - text: waiting faithfully at home.
+  - text: My first light bloomed the moment
+    delayAfter: 3
+  - text: "I met my parents\u2019 gentle eyes."
+    delayAfter: 3
+  - text: That toy-filled warm small house
+    delayAfter: 3
+  - text: "was my safe haven in life\u2019s skies."
+    delayAfter: 3
+  - text: I wandered all my years
+    delayAfter: 3
+  - text: to find that first warm prize.
     delayAfter: 100
   segmentA:
     backgroundSprite: {fileID: 21300000, guid: 48a0e551b36ca4e4ab5ba4355beb53c7, type: 3}

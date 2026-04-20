@@ -16,17 +16,21 @@ MonoBehaviour:
   introAnimator: {fileID: 0}
   introImage: {fileID: 0}
   introText: Two signals merge into one eternal peace.
+  introResultBgColor: {r: 1, g: 1, b: 1, a: 1}
+  polaroidSprite: {fileID: 0}
   subtitleLines:
-  - text: 'The first light in my life was the moment '
-    delayAfter: 2
-  - text: "I met my parents\u2019 eyes in the delivery room."
-    delayAfter: 2
-  - text: That little house full of plush toys was always my safe haven.
-    delayAfter: 2
-  - text: 'After a lifetime of wandering, '
-    delayAfter: 2
-  - text: "I\u2019ve finally come home to that first warmth."
-    delayAfter: 2
+  - text: I died in this old hospital,
+    delayAfter: 3
+  - text: just a few floors above my birth.
+    delayAfter: 3
+  - text: I roamed through all my lifetime,
+    delayAfter: 3
+  - text: back to the origin of earth.
+    delayAfter: 3
+  - text: My heart still holds my dear cat,
+    delayAfter: 3
+  - text: who waits for me at home.
+    delayAfter: 100
   segmentA:
     backgroundSprite: {fileID: 21300000, guid: 9fbbb7b943c89994cb9d02452bf68912, type: 3}
     destructibleObstacleSprites: []
