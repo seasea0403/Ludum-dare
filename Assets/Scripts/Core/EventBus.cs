@@ -47,4 +47,7 @@ public static class GameEvents
     // 最终关照片收集
     public const string PhotoCollected      = "PhotoCollected";
     public const string AllPhotosCollected  = "AllPhotosCollected";
+
+    // 教学关卡
+    public const string TutorialCompleted   = "TutorialCompleted";
 }

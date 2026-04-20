@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Level_04
   m_EditorClassIdentifier: 
   levelIndex: 4
-  introAnimator: {fileID: 0}
-  introImage: {fileID: 0}
+  introAnimator: {fileID: 9100000, guid: e8ae628bf44a5a14ca43608d748928b7, type: 2}
+  introImage: {fileID: 21300000, guid: ed8a0c1c2e82d1c4d92b3e317a95f347, type: 3}
   introText: I follow the old signal to find you again.
   introResultBgColor: {r: 1, g: 1, b: 1, a: 1}
-  polaroidSprite: {fileID: 0}
+  polaroidSprite: {fileID: 21300000, guid: 43565976f01962a47b7b203b0c1f5be5, type: 3}
   subtitleLines:
   - text: I lived in quiet countryside,
     delayAfter: 3
@@ -51,6 +51,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 532c14d65d5154e45869b95b99c7419f, type: 3}
     cycleCount: 10
   spawnPattern: {fileID: 11400000, guid: 91f19de053e19c34cbdc9c43f772d542, type: 2}
+  isTutorial: 0
   isFinalLevel: 0
   photoSprites: []
   photoBubblePrefab: {fileID: 0}

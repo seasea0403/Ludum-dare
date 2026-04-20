@@ -11,6 +11,9 @@ public class LevelManager : MonoBehaviour
     [Header("关卡配置（按顺序放入 5 个 LevelData SO）")]
     [SerializeField] private LevelData[] levels;
 
+    [Header("教学关卡配置")]
+    [SerializeField] private LevelData tutorialLevelData;
+
     /// <summary>当前关卡索引 (0~4)</summary>
     public int CurrentLevelIndex { get; private set; }
 
@@ -24,15 +27,26 @@ public class LevelManager : MonoBehaviour
     public SceneSegment CurrentSegment { get; private set; }
 
     /// <summary>当前关卡数据</summary>
-    public LevelData CurrentLevel => (levels != null && CurrentLevelIndex < levels.Length)
-        ? levels[CurrentLevelIndex] : null;
+    public LevelData CurrentLevel => isInTutorial ? tutorialLevelData
+        : (levels != null && CurrentLevelIndex < levels.Length) ? levels[CurrentLevelIndex] : null;
 
     private int targetCycleCount;
+    private bool isInTutorial;
 
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
+    }
+
+    void OnEnable()
+    {
+        EventBus.Subscribe(GameEvents.TutorialCompleted, OnTutorialCompleted);
+    }
+
+    void OnDisable()
+    {
+        EventBus.Unsubscribe(GameEvents.TutorialCompleted, OnTutorialCompleted);
     }
 
     void Start()
@@ -72,6 +86,10 @@ public class LevelManager : MonoBehaviour
         lastDestructibleIndex   = -1;
         lastIndestructibleIndex = -1;
 
+        // 强制复位武器切换 UI（确保红波/front 始终在上方，与玩家初始低频状态一致）
+        var weaponUI = FindObjectOfType<WeaponSwitchUI>(true);
+        if (weaponUI) weaponUI.ForceReset();
+
         // 确保血量 HUD 与实际数值同步（防止过关/重来后 UI 未刷新）
         var player = FindObjectOfType<PlayerController>();
         if (player)
@@ -94,7 +112,26 @@ public class LevelManager : MonoBehaviour
         // 设置玩家的最终关模式
         if (player) player.isFinalLevel = CurrentLevel.isFinalLevel;
 
-        if (CurrentLevel.isFinalLevel)
+        if (CurrentLevel.isTutorial)
+        {
+            // ——— 教学关特殊流程 ———
+            var tutCtrl = FindObjectOfType<TutorialController>(true);
+            if (tutCtrl) tutCtrl.Init(CurrentLevel);
+
+            // 教学关不生成随机障碍物，但需要地形块提供地面
+            var chunker = FindObjectOfType<TerrainChunker>();
+            if (chunker) chunker.SetSpawnPaused(true); // 禁止随机生成
+
+            // 确保 NormalHUD 显示
+            var normalHUD = GameObject.Find("NormalHUD");
+            if (normalHUD) normalHUD.SetActive(true);
+
+            var photoHUD = FindObjectOfType<PhotoHUD>(true);
+            if (photoHUD) photoHUD.gameObject.SetActive(false);
+
+            EventBus.Publish(GameEvents.SceneSegmentChanged, CurrentSegment);
+        }
+        else if (CurrentLevel.isFinalLevel)
         {
             // ——— 最终关特殊流程 ———
             // 不生成地形障碍物
@@ -244,10 +281,35 @@ public class LevelManager : MonoBehaviour
     public void LoadLevel(int index)
     {
         if (levels == null || index < 0 || index >= levels.Length) return;
+        isInTutorial = false;
         CurrentLevelIndex = index;
         if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(true);
         ResetGameState();
         ShowIntroThenStart();
+    }
+
+    /// <summary>加载教学关卡（不显示 Intro 面板，直接开始）</summary>
+    public void LoadTutorial()
+    {
+        if (tutorialLevelData == null) 
+        {
+            Debug.LogWarning("LevelManager: tutorialLevelData 未设置，跳过教学直接进第一关");
+            LoadLevel(0);
+            return;
+        }
+        isInTutorial = true;
+        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(false);
+        ResetGameState();
+        BeginLevel();
+    }
+
+    /// <summary>教学关完成后的回调</summary>
+    private void OnTutorialCompleted(object _)
+    {
+        if (!isInTutorial) return;
+        isInTutorial = false;
+        // 教学完成 → 加载第一关（带 Intro 面板）
+        LoadLevel(0);
     }
 
     /// <summary>原地重置玩家和地形，不需要切换场景</summary>
@@ -266,6 +328,10 @@ public class LevelManager : MonoBehaviour
         // 清理最终关的泡泡和猫
         var finalCtrl = FindObjectOfType<FinalLevelController>(true);
         if (finalCtrl) finalCtrl.Cleanup();
+
+        // 清理教学关
+        var tutCtrl = FindObjectOfType<TutorialController>(true);
+        if (tutCtrl) tutCtrl.Cleanup();
 
         var chunker = FindObjectOfType<TerrainChunker>();
         if (chunker) chunker.ResetChunks();

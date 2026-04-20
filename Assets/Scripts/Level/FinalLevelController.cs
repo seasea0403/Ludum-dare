@@ -96,7 +96,7 @@ public class FinalLevelController : MonoBehaviour
         if (levelData == null || levelData.catPrefab == null) return;
 
         // 猫生成在场景末端
-        Vector3 pos = new Vector3(75f, -1f, 0f);
+        Vector3 pos = new Vector3(75f, -2f, 0f);
         catInstance = Instantiate(levelData.catPrefab, pos, Quaternion.identity);
         catInstance.SetActive(true);
 

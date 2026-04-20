@@ -54,6 +54,9 @@ public class PlayerController : MonoBehaviour
     /// <summary>最终关模式：手动 A/D 移动，无伤害</summary>
     [HideInInspector] public bool isFinalLevel;
 
+    /// <summary>教学关暂停：冻结移动和输入，由 TutorialController 控制</summary>
+    [HideInInspector] public bool isTutorialPaused;
+
     void Awake()
     {
         rb            = GetComponent<Rigidbody2D>();
@@ -84,10 +87,11 @@ public class PlayerController : MonoBehaviour
         shieldRoutine  = null;
         jumpCount      = 0;
         fireTimer      = 0;
-        
-        // 保留当前的射击频段，不要在切关卡时强制重置为High
-        // CurrentFrequency = SignalFrequency.High; // 删除这行
-        
+        isTutorialPaused = false;
+
+        // 每次重置都恢复到低频（红波/attack），与 WeaponSwitchUI 初始状态保持一致
+        CurrentFrequency = SignalFrequency.Low;
+
         if (sr) sr.color = Color.white;
         enabled = true;
 
@@ -95,7 +99,7 @@ public class PlayerController : MonoBehaviour
         EventBus.Publish(GameEvents.PlayerHit,        CurrentHealth);
         EventBus.Publish(GameEvents.CoinCollected,    CoinCount);
         EventBus.Publish(GameEvents.CrownCountChanged, CrownCount);
-        // EventBus.Publish(GameEvents.FrequencyChanged, CurrentFrequency); // 删除这行，因为没发生改变就不发广播，避免 UI 错误重置
+        // FrequencyChanged 由 LevelManager.BeginLevel 中统一调用 WeaponSwitchUI.ForceReset() 处理，避免触发动画
         EventBus.Publish(GameEvents.ShieldBroken);
     }
 
@@ -113,6 +117,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (isTutorialPaused) return;
+
         timer += Time.deltaTime;
         if(timer>20f) moveSpeed += Time.deltaTime * 0.018f;
         CheckGround();
@@ -130,6 +136,13 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isTutorialPaused)
+        {
+            rb.velocity = new Vector2(0f, rb.velocity.y);
+            ApplyBetterGravity();
+            return;
+        }
+
         if (isFinalLevel)
         {
             float h = Input.GetAxisRaw("Horizontal");
@@ -233,6 +246,42 @@ public class PlayerController : MonoBehaviour
     {
         CoinCount++;
         EventBus.Publish(GameEvents.CoinCollected, CoinCount);
+    }
+
+    // ───── 教学关强制操作（绕过 isTutorialPaused 检查）─────
+
+    /// <summary>教学关强制切换频段</summary>
+    public void TutorialForceSwitch()
+    {
+        CurrentFrequency = CurrentFrequency == SignalFrequency.High
+            ? SignalFrequency.Low : SignalFrequency.High;
+        fireTimer = 0f;
+        EventBus.Publish(GameEvents.FrequencyChanged, CurrentFrequency);
+    }
+
+    /// <summary>教学关强制发射高频探测波</summary>
+    public void TutorialForceSignal()
+    {
+        if (waveAnimator)
+            waveAnimator.Pulse(transform.position);
+        else if (fogManager)
+            fogManager.EmitPulse(transform.position, signalRadius);
+    }
+
+    /// <summary>教学关强制发射低频攻击波</summary>
+    public void TutorialForceAttack()
+    {
+        Vector3 origin = firePoint ? firePoint.position : transform.position;
+        if (waveAnimator) waveAnimator.Shoot(origin);
+    }
+
+    /// <summary>教学关强制跳跃</summary>
+    public void TutorialForceJump()
+    {
+        rb.velocity = new Vector2(rb.velocity.x, 0f);
+        rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        jumpCount++;
+        if (AudioManager.Instance) AudioManager.Instance.PlayJump();
     }
 
     public void TakeDamage()

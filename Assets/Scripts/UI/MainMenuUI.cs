@@ -90,9 +90,9 @@ public class MainMenuUI : MonoBehaviour
                 guideCloseButton.onClick.AddListener(() => 
                 {
                     guidePanel.SetActive(false);
-                    // 关闭教学面版后恢复时间，进入 IntroPanel（因为 LoadLevel 会自动暂停拉起面版）
+                    // 关闭引导面板后进入教学关卡
                     Time.timeScale = 1f;
-                    if (LevelManager.Instance) LevelManager.Instance.LoadLevel(levelIndex);
+                    if (LevelManager.Instance) LevelManager.Instance.LoadTutorial();
                 });
             }
         }

@@ -22,6 +22,22 @@ public class WeaponSwitchUI : MonoBehaviour
 
     private Coroutine swapCoroutine;
 
+    // 保存原始引用和位置，用于强制复位
+    private RectTransform originalFrontPanel;
+    private RectTransform originalBackPanel;
+    private Image         originalFrontBg;
+    private Image         originalBackBg;
+    private Vector2       originalFrontPos;
+    private Vector2       originalBackPos;
+
+    void Awake()
+    {
+        originalFrontPanel = frontPanel;
+        originalBackPanel  = backPanel;
+        originalFrontBg    = frontBg;
+        originalBackBg     = backBg;
+    }
+
     void OnEnable()
     {
         EventBus.Subscribe(GameEvents.FrequencyChanged, OnFrequencyChanged);
@@ -34,10 +50,38 @@ public class WeaponSwitchUI : MonoBehaviour
 
     void Start()
     {
-        // 初始状态：front 亮，back 暗
+        // 记录初始锚点位置（必须在 Start 中，RectTransform 已完成布局后再读）
+        if (frontPanel) originalFrontPos = frontPanel.anchoredPosition;
+        if (backPanel)  originalBackPos  = backPanel.anchoredPosition;
+
+        ForceReset();
+    }
+
+    /// <summary>强制将 UI 恢复到初始状态（front=红波在前），不播放动画</summary>
+    public void ForceReset()
+    {
+        if (swapCoroutine != null)
+        {
+            StopCoroutine(swapCoroutine);
+            swapCoroutine = null;
+        }
+
+        // 恢复原始引用
+        frontPanel = originalFrontPanel;
+        backPanel  = originalBackPanel;
+        frontBg    = originalFrontBg;
+        backBg     = originalBackBg;
+
+        // 恢复位置（仅当位置已记录时才恢复）
+        if (frontPanel && originalFrontPos != Vector2.zero)
+            frontPanel.anchoredPosition = originalFrontPos;
+        if (backPanel && originalBackPos != Vector2.zero)
+            backPanel.anchoredPosition  = originalBackPos;
+
+        // 恢复颜色与层级
         ApplyVisual(frontPanel, frontBg, brightColor);
-        ApplyVisual(backPanel, backBg, dimColor);
-        frontPanel.SetAsLastSibling(); // 确保 front 渲染在最上层
+        ApplyVisual(backPanel,  backBg,  dimColor);
+        if (frontPanel) frontPanel.SetAsLastSibling();
     }
 
     void OnFrequencyChanged(object data)

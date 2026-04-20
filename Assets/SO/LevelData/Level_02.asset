@@ -17,7 +17,7 @@ MonoBehaviour:
   introImage: {fileID: 21300000, guid: 994e3c1070b48894e9c4971e2be04788, type: 3}
   introText: Every step hums a signal of our youthful days.
   introResultBgColor: {r: 1, g: 1, b: 1, a: 1}
-  polaroidSprite: {fileID: 0}
+  polaroidSprite: {fileID: 21300000, guid: ffbb3c1a09d641a4eabce43efb647668, type: 3}
   subtitleLines:
   - text: I miss old school hallways
     delayAfter: 3
@@ -50,6 +50,7 @@ MonoBehaviour:
     - {fileID: 0}
     cycleCount: 10
   spawnPattern: {fileID: 11400000, guid: f31be4dd798ff064f98669a0bca0a9a1, type: 2}
+  isTutorial: 0
   isFinalLevel: 0
   photoSprites: []
   photoBubblePrefab: {fileID: 0}
