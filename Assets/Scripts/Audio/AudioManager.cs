@@ -15,6 +15,7 @@ public class AudioManager : MonoBehaviour
 
     // ───── BGM ─────
     [Header("BGM")]
+    [SerializeField] private AudioClip mainBGM;             // 主界面/教学关 BGM
     [SerializeField] private AudioClip[] levelBGMs;         // 按关卡索引 0~4
     [SerializeField, Range(0f, 1f)] private float bgmVolume = 0.4f;
     [SerializeField] private float bgmFadeDuration = 1f;
@@ -58,7 +59,6 @@ public class AudioManager : MonoBehaviour
     private AudioSource typingAudioSource;  // 打字音效专用 source
     private List<AudioSource> sfxPool;
     private bool gameplaySfxBlocked;
-    private readonly HashSet<int> boundButtonIds = new HashSet<int>();
 
     // ───── 运行时音量（可被 Settings 修改）─────
     private float runtimeBgmVolume;
@@ -101,6 +101,12 @@ public class AudioManager : MonoBehaviour
         // 加载持久化音量（首次使用 Inspector 默认值）
         runtimeBgmVolume = PlayerPrefs.GetFloat(PrefKeyBGM, bgmVolume);
         runtimeSfxVolume = PlayerPrefs.GetFloat(PrefKeySFX, sfxVolume);
+    }
+
+    void Start()
+    {
+        // 游戏一开始播放主 BGM
+        PlayMainBGM();
     }
 
     void OnEnable()
@@ -228,6 +234,14 @@ public class AudioManager : MonoBehaviour
     public void PlayBookFlip()          => PlaySFX(sfxBookFlip);
     public void PlayCameraShutter()     => PlaySFX(sfxCameraShutter);
     public void PlayPolaroidSlide()     => PlaySFX(sfxPolaroidSlide);
+
+    /// <summary>播放主界面/教学关 BGM</summary>
+    public void PlayMainBGM()
+    {
+        if (mainBGM == null) return;
+        if (activeBgmSource.clip == mainBGM && activeBgmSource.isPlaying) return;
+        StartCoroutine(CrossfadeBGM(mainBGM));
+    }
 
     /// <summary>按关卡索引播放 BGM（带淡入淡出）</summary>
     public void PlayBGM(int levelIndex)
@@ -399,17 +413,42 @@ public class AudioManager : MonoBehaviour
 
     private void BindButtonClickSfxInScene()
     {
-        var buttons = FindObjectsOfType<Button>(true);
-        for (int i = 0; i < buttons.Length; i++)
+        var buttons = Resources.FindObjectsOfTypeAll<Button>();
+        foreach (var btn in buttons)
         {
-            var btn = buttons[i];
-            if (btn == null) continue;
+            // 过滤掉预制体
+            if (btn.gameObject.scene.rootCount == 0) continue;
 
-            int id = btn.GetInstanceID();
-            if (boundButtonIds.Contains(id)) continue;
+            if (btn.GetComponent<UIButtonSfx>() == null)
+            {
+                btn.gameObject.AddComponent<UIButtonSfx>();
+            }
+        }
+    }
+}
 
-            btn.onClick.AddListener(PlayUIButtonClick);
-            boundButtonIds.Add(id);
+/// <summary>
+/// 挂载到所有 Button 上，拦截所有鼠标、触摸、乃至键盘 UI 导航点击，强制播放音效
+/// 不会被 onClick.RemoveAllListeners() 清理掉
+/// </summary>
+public class UIButtonSfx : MonoBehaviour, UnityEngine.EventSystems.IPointerClickHandler, UnityEngine.EventSystems.ISubmitHandler
+{
+    private Button btn;
+    void Awake() { btn = GetComponent<Button>(); }
+
+    public void OnPointerClick(UnityEngine.EventSystems.PointerEventData eventData)
+    {
+        if (btn != null && btn.interactable && AudioManager.Instance != null && eventData.button == UnityEngine.EventSystems.PointerEventData.InputButton.Left)
+        {
+            AudioManager.Instance.PlayUIButtonClick();
+        }
+    }
+
+    public void OnSubmit(UnityEngine.EventSystems.BaseEventData eventData)
+    {
+        if (btn != null && btn.interactable && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayUIButtonClick();
         }
     }
 }

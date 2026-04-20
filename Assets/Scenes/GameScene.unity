@@ -1571,16 +1571,18 @@ MonoBehaviour:
   - {fileID: 1213925912}
   replayButton: {fileID: 1272982748}
   fadeToWhiteDuration: 2
-  holdWhiteDuration: 1
+  holdWhiteDuration: 0
   panelFadeInDuration: 1
   imageAFadeInDuration: 1
   imageAHoldDuration: 3
   imageCrossFadeDuration: 1.2
   imageBHoldDuration: 3
-  toBlackDuration: 6
-  textStartDelay: 0.4
-  textShowDuration: 1.6
-  textInterval: 1.6
+  toBlackDuration: 10
+  textStartDelay: 0.8
+  textShowDuration: 2
+  textInterval: 2
+  textFadeInDuration: 0.4
+  textFadeOutDuration: 0.4
 --- !u!1 &210213019
 GameObject:
   m_ObjectHideFlags: 0
@@ -8117,7 +8119,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Tap anywhere to start again
+  m_text: Thanks for playing! Please rate us!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 162694f5492db934c8c9afd5881e11d5, type: 2}
   m_sharedMaterial: {fileID: -4777737299086380786, guid: 162694f5492db934c8c9afd5881e11d5, type: 2}
@@ -8180,7 +8182,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -284.54584, y: 0, z: 131.66405, w: 8.102422}
+  m_margin: {x: -361.04428, y: 0, z: 131.66405, w: 8.102422}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -15782,6 +15784,7 @@ MonoBehaviour:
   bookPrefab: {fileID: 7400961287198879854, guid: 822a5a0a0d7bcc149b85a43a1655cc12, type: 3}
   bossPrefab: {fileID: 3900901349722368648, guid: 86b40e8a560f9f94298568dec75746c1, type: 3}
   fogSprite: {fileID: 21300000, guid: 348929aaa30dcff45b0a11b8dc6ec9b9, type: 3}
+  postBossNoSpawnDistance: 15
 --- !u!4 &1768085555
 Transform:
   m_ObjectHideFlags: 0
@@ -16155,7 +16158,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1873517823
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17473,12 +17476,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levels:
+  - {fileID: 11400000, guid: 835c13a43df86bb449944c26e66e07ec, type: 2}
+  - {fileID: 11400000, guid: 1ff49fcb820dda7428e6488e41a7ba64, type: 2}
+  - {fileID: 11400000, guid: 2e0f9c1e8db99ee4d8edce102e7c0ac4, type: 2}
   - {fileID: 11400000, guid: 10ee6477ff20f61419f8cf6988d8b736, type: 2}
   - {fileID: 11400000, guid: 29a57d46be6da314aa0460bca1378c1e, type: 2}
-  - {fileID: 11400000, guid: 835c13a43df86bb449944c26e66e07ec, type: 2}
-  - {fileID: 11400000, guid: 2e0f9c1e8db99ee4d8edce102e7c0ac4, type: 2}
-  - {fileID: 11400000, guid: 1ff49fcb820dda7428e6488e41a7ba64, type: 2}
-  - {fileID: 11400000, guid: 851bc2176d89b274a82e1b1898ebe4d3, type: 2}
   tutorialLevelData: {fileID: 11400000, guid: 07a06ab12c4b25648b8e84376edc33a1, type: 2}
 --- !u!1 &1964201099
 GameObject:
@@ -18284,6 +18286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 393c04eaf5eb28b448592b352af2a143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainBGM: {fileID: 8300000, guid: 4ab9e9bed7c884b448d8ca673b25de74, type: 3}
   levelBGMs:
   - {fileID: 8300000, guid: 10a9c8aad006c824ca0e0708c1635e35, type: 3}
   - {fileID: 8300000, guid: 0dd487f8aec2b4a4c9ac14f1aaef0bba, type: 3}

@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Level_03
   m_EditorClassIdentifier: 
   levelIndex: 3
+  minMoveSpeed: 6
+  maxMoveSpeed: 6.5
+  accelerationDuration: 60
   introAnimator: {fileID: 9100000, guid: 4b3748241cdb5a84fbf7b430ea23e2f7, type: 2}
   introImage: {fileID: 21300000, guid: 8db45e194f78b194f951f7b883e08fc8, type: 3}
   introText: Lost in the noise, but still chasing a faint signal.
@@ -49,7 +52,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 997fcffc966f2684fbae1b4095e0ec4b, type: 3}
     indestructibleObstacleSprites:
     - {fileID: 21300000, guid: 30b38923367debd47a78fcf33dca856f, type: 3}
-    cycleCount: 10
+    cycleCount: 100
   spawnPattern: {fileID: 11400000, guid: 2f9979c3bd5bd8843add818263151d6b, type: 2}
   isTutorial: 0
   isFinalLevel: 0

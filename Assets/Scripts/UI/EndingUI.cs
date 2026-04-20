@@ -42,6 +42,8 @@ public class EndingUI : MonoBehaviour
     [SerializeField] private float textStartDelay = 0.4f;
     [SerializeField] private float textShowDuration = 1.6f;
     [SerializeField] private float textInterval = 1.6f;
+    [SerializeField] private float textFadeInDuration = 0.4f;
+    [SerializeField] private float textFadeOutDuration = 0.4f;
 
     private CanvasGroup endingPanelCanvasGroup;
     private bool hasStarted;
@@ -102,11 +104,6 @@ public class EndingUI : MonoBehaviour
 
     IEnumerator EndingSequence()
     {
-        // 停止打字机音效
-        if (AudioManager.Instance) AudioManager.Instance.StopTyping();
-        var typingEffect = FindObjectOfType<TypingEffect>(true);
-        if (typingEffect) typingEffect.Clear();
-
         // 阶段1：画面渐渐变白
         if (whiteOverlay)
         {
@@ -129,28 +126,7 @@ public class EndingUI : MonoBehaviour
         var photoHUD = FindObjectOfType<PhotoHUD>(true);
         if (photoHUD) photoHUD.gameObject.SetActive(false);
 
-        // 阶段3：显示结局面板，淡入
-        if (endingPanel && endingPanelCanvasGroup)
-        {
-            endingPanel.SetActive(true);
-            float timer = 0;
-            while (timer < panelFadeInDuration)
-            {
-                timer += Time.deltaTime;
-                endingPanelCanvasGroup.alpha = Mathf.Clamp01(timer / panelFadeInDuration);
-                yield return null;
-            }
-            endingPanelCanvasGroup.alpha = 1;
-        }
-
-        // 过渡结束后释放白遮罩，避免拦截结局按钮点击
-        if (whiteOverlay)
-        {
-            whiteOverlay.raycastTarget = false;
-            whiteOverlay.color = new Color(1f, 1f, 1f, 0f);
-        }
-
-        // 重置结局元素初始可见性
+        // 重置结局元素初始可见性（放在淡入前准备好）
         if (endingImageA) SetImageAlpha(endingImageA, 0f);
         if (endingImageB) SetImageAlpha(endingImageB, 0f);
         if (blackOverlay)
@@ -171,18 +147,34 @@ public class EndingUI : MonoBehaviour
 
         if (replayButton) replayButton.gameObject.SetActive(false);
 
-        // 阶段4：图1渐显
-        if (endingImageA)
+        // 阶段3与阶段4合并：显示结局面板并与 Image A 共同淡入
+        // 在面板浮现时，停止所有遗留的打字机相关逻辑
+        if (AudioManager.Instance) AudioManager.Instance.StopTyping();
+        foreach (var sp in FindObjectsOfType<SubtitlePlayer>(true)) sp.Stop();
+        foreach (var te in FindObjectsOfType<TypingEffect>(true)) te.Clear();
+
+        if (endingPanel && endingPanelCanvasGroup)
         {
-            float timer = 0f;
-            while (timer < imageAFadeInDuration)
+            endingPanel.SetActive(true);
+            float timer = 0;
+            float maxDuration = Mathf.Max(0.01f, Mathf.Max(panelFadeInDuration, imageAFadeInDuration));
+
+            while (timer < maxDuration)
             {
                 timer += Time.deltaTime;
-                float t = Mathf.Clamp01(timer / Mathf.Max(0.01f, imageAFadeInDuration));
-                SetImageAlpha(endingImageA, t);
+                endingPanelCanvasGroup.alpha = Mathf.Clamp01(timer / Mathf.Max(0.01f, panelFadeInDuration));
+                if (endingImageA) SetImageAlpha(endingImageA, Mathf.Clamp01(timer / Mathf.Max(0.01f, imageAFadeInDuration)));
                 yield return null;
             }
-            SetImageAlpha(endingImageA, 1f);
+            endingPanelCanvasGroup.alpha = 1f;
+            if (endingImageA) SetImageAlpha(endingImageA, 1f);
+        }
+
+        // 过渡结束后释放白遮罩，避免拦截结局按钮点击
+        if (whiteOverlay)
+        {
+            whiteOverlay.raycastTarget = false;
+            whiteOverlay.color = new Color(1f, 1f, 1f, 0f);
         }
 
         // 阶段5：图1停留
@@ -225,11 +217,20 @@ public class EndingUI : MonoBehaviour
         int textCount = textRoots != null ? textRoots.Length : 0;
         float blackElapsed = 0f;
 
+        // 初始化所有文字的 CanvasGroup
+        CanvasGroup[] textCanvasGroups = new CanvasGroup[textCount];
         if (textRoots != null)
         {
             for (int i = 0; i < textRoots.Length; i++)
             {
-                if (textRoots[i]) textRoots[i].SetActive(false);
+                if (textRoots[i])
+                {
+                    textCanvasGroups[i] = textRoots[i].GetComponent<CanvasGroup>();
+                    if (!textCanvasGroups[i])
+                        textCanvasGroups[i] = textRoots[i].AddComponent<CanvasGroup>();
+                    textCanvasGroups[i].alpha = 0f;
+                    textRoots[i].SetActive(false);
+                }
             }
         }
 
@@ -253,15 +254,45 @@ public class EndingUI : MonoBehaviour
                 textRoots[i].transform.SetAsLastSibling();
             }
 
-            float showTimer = 0f;
-            while (showTimer < textShowDuration)
+            // 淡入阶段
+            float fadeInTimer = 0f;
+            while (fadeInTimer < textFadeInDuration)
             {
                 float dt = Time.deltaTime;
-                showTimer += dt;
+                fadeInTimer += dt;
+                blackElapsed += dt;
+                float t = Mathf.Clamp01(fadeInTimer / textFadeInDuration);
+                if (textCanvasGroups[i]) textCanvasGroups[i].alpha = t;
+                UpdateBlackOverlay(blackElapsed);
+                yield return null;
+            }
+            if (textCanvasGroups[i]) textCanvasGroups[i].alpha = 1f;
+
+            // 文字保留显示
+            float holdTimer = 0f;
+            float holdDuration = textShowDuration - textFadeInDuration - textFadeOutDuration;
+            while (holdTimer < holdDuration)
+            {
+                float dt = Time.deltaTime;
+                holdTimer += dt;
                 blackElapsed += dt;
                 UpdateBlackOverlay(blackElapsed);
                 yield return null;
             }
+
+            // 淡出阶段
+            float fadeOutTimer = 0f;
+            while (fadeOutTimer < textFadeOutDuration)
+            {
+                float dt = Time.deltaTime;
+                fadeOutTimer += dt;
+                blackElapsed += dt;
+                float t = Mathf.Clamp01(fadeOutTimer / textFadeOutDuration);
+                if (textCanvasGroups[i]) textCanvasGroups[i].alpha = 1f - t;
+                UpdateBlackOverlay(blackElapsed);
+                yield return null;
+            }
+            if (textCanvasGroups[i]) textCanvasGroups[i].alpha = 0f;
 
             if (textRoots[i]) textRoots[i].SetActive(false);
 

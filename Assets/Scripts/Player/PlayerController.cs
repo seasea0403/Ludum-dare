@@ -8,6 +8,10 @@ public class PlayerController : MonoBehaviour
 {
     [Header("自动移动")]
     [SerializeField]  private float moveSpeed = 5f;
+    private float minSpeed = 4.5f;
+    private float maxSpeed = 5.0f;
+    private float accDuration = 60f;
+    private float speedTimer = 0f;
 
     [Header("跳跃")]
     [SerializeField] private float     jumpForce          = 11f;
@@ -49,7 +53,6 @@ public class PlayerController : MonoBehaviour
     private float startX;
     private Coroutine shieldRoutine;
     private Vector3 spawnPosition;
-    private float timer = 0f;
 
     /// <summary>最终关模式：手动 A/D 移动，无伤害</summary>
     [HideInInspector] public bool isFinalLevel;
@@ -90,8 +93,24 @@ public class PlayerController : MonoBehaviour
         shieldRoutine  = null;
         jumpCount      = 0;
         fireTimer      = 0;
+        speedTimer     = 0f;
         isTutorialPaused = false;
         isTutorialInputRestricted = false;
+
+        // 从 LevelManager 获取该关卡的移速配置
+        if (LevelManager.Instance != null && LevelManager.Instance.CurrentLevel != null)
+        {
+            minSpeed    = LevelManager.Instance.CurrentLevel.minMoveSpeed;
+            maxSpeed    = LevelManager.Instance.CurrentLevel.maxMoveSpeed;
+            accDuration = LevelManager.Instance.CurrentLevel.accelerationDuration;
+        }
+        else
+        {
+            minSpeed    = 4.5f;
+            maxSpeed    = 5.0f;
+            accDuration = 60f;
+        }
+        moveSpeed = minSpeed;
 
         // 每次重置都恢复到低频（红波/attack），与 WeaponSwitchUI 初始状态保持一致
         CurrentFrequency = SignalFrequency.Low;
@@ -123,8 +142,16 @@ public class PlayerController : MonoBehaviour
     {
         if (isTutorialPaused) return;
 
-        timer += Time.deltaTime;
-        if(timer>20f) moveSpeed += Time.deltaTime * 0.018f;
+        speedTimer += Time.deltaTime;
+        if (accDuration > 0f)
+        {
+            moveSpeed = Mathf.Lerp(minSpeed, maxSpeed, speedTimer / accDuration);
+        }
+        else
+        {
+            moveSpeed = maxSpeed;
+        }
+
         CheckGround();
 
         if (isTutorialInputRestricted)

@@ -75,8 +75,6 @@ public class LevelManager : MonoBehaviour
     {
         if (CurrentLevel == null) return;
 
-        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(false);
-
         CurrentSegmentPhase = 0;
         CurrentCycleCount = 0;
         CurrentSegment = CurrentLevel.segmentA;
@@ -105,7 +103,13 @@ public class LevelManager : MonoBehaviour
         }
 
         // 播放当前关卡 BGM
-        if (AudioManager.Instance) AudioManager.Instance.PlayBGM(CurrentLevelIndex);
+        if (AudioManager.Instance)
+        {
+            if (CurrentLevel.isTutorial)
+                AudioManager.Instance.PlayMainBGM();
+            else
+                AudioManager.Instance.PlayBGM(CurrentLevelIndex);
+        }
 
         // 设置玩家的最终关模式
         if (player) player.isFinalLevel = CurrentLevel.isFinalLevel;
@@ -165,6 +169,9 @@ public class LevelManager : MonoBehaviour
 
             EventBus.Publish(GameEvents.SceneSegmentChanged, CurrentSegment);
         }
+
+        // 允许播放游戏音效（解除屏蔽）
+        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(false);
     }
 
     /// <summary>
@@ -260,7 +267,7 @@ public class LevelManager : MonoBehaviour
     /// <summary>重试当前关卡（无介绍面板）</summary>
     public void ReloadLevel()
     {
-        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(false);
+        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(true);
         ResetGameState();
         BeginLevel();
     }
@@ -268,6 +275,8 @@ public class LevelManager : MonoBehaviour
     /// <summary>加载下一关（先显示介绍面板）</summary>
     public void LoadNextLevel()
     {
+        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(true);
+
         if (isInTutorial)
         {
             isInTutorial = false;
@@ -283,12 +292,10 @@ public class LevelManager : MonoBehaviour
 
         if (CurrentLevel != null && CurrentLevel.isFinalLevel)
         {
-            if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(false);
             BeginLevel();
             return;
         }
 
-        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(true);
         ShowIntroThenStart();
     }
 
@@ -313,7 +320,7 @@ public class LevelManager : MonoBehaviour
             return;
         }
         isInTutorial = true;
-        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(false);
+        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(true);
         ResetGameState();
         BeginLevel();
     }

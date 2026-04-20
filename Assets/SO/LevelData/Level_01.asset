@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Level_01
   m_EditorClassIdentifier: 
   levelIndex: 1
+  minMoveSpeed: 5
+  maxMoveSpeed: 5.5
+  accelerationDuration: 60
   introAnimator: {fileID: 9100000, guid: 155cd6bde9a2510459e1efaeca96b026, type: 2}
   introImage: {fileID: 21300000, guid: a2fec31b58bc4a1488cfa51202d4c57f, type: 3}
   introText: The road back to the warmest days of my life.
@@ -52,7 +55,7 @@ MonoBehaviour:
     indestructibleObstacleSprites:
     - {fileID: 21300000, guid: ad430a4ce74dfa94486352f49848a021, type: 3}
     - {fileID: 21300000, guid: b589fed26fd56894f9e8ed0bef57bbcb, type: 3}
-    cycleCount: 10
+    cycleCount: 100
   spawnPattern: {fileID: 11400000, guid: a3a9434e4cd7f5941a0c436056976963, type: 2}
   isTutorial: 0
   isFinalLevel: 0

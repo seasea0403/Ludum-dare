@@ -29,6 +29,9 @@ public class TerrainChunker : MonoBehaviour
     [SerializeField] private Sprite fogSprite;
     public Sprite FogSprite => fogSprite;
 
+    [Header("Boss 死亡后的免生成距离")]
+    public float postBossNoSpawnDistance = 70f;
+
     private int totalCrownsSpawned;
     private const int MAX_CROWNS = 3;
     private SpawnPattern currentPattern;
@@ -36,9 +39,19 @@ public class TerrainChunker : MonoBehaviour
     private float lastCoinEndX = float.NegativeInfinity;
     private bool spawnPaused;
     private bool bossPending; // Boss entry 已解析，等待下一个 chunk 生成
+    private float bossSafeEndX = float.NegativeInfinity;
 
-    /// <summary>暂停/恢复物体生成（Boss 用）</summary>
-    public void SetSpawnPaused(bool paused) => spawnPaused = paused;
+    /// <summary>暂停/恢复物体生成（Boss 用），恢复时应用强制避让距离</summary>
+    public void SetSpawnPaused(bool paused)
+    {
+        spawnPaused = paused;
+        if (!paused && cam != null)
+        {
+            // Boss 打完后，从屏幕右侧开始往后推 70m（根据设定的变量）不生成任何物体
+            float rightEdge = cam.transform.position.x + cam.orthographicSize * cam.aspect;
+            bossSafeEndX = rightEdge + postBossNoSpawnDistance;
+        }
+    }
 
     private Camera cam;
     private List<Vector3> initialChunkPositions = new List<Vector3>();
@@ -93,6 +106,7 @@ public class TerrainChunker : MonoBehaviour
         lastCoinEndX = float.NegativeInfinity;
         spawnPaused = false;
         bossPending = false;
+        bossSafeEndX = float.NegativeInfinity;
         Physics2D.SyncTransforms();
         // 初始内容由 LevelManager.BeginLevel 在 CurrentSegment 设好后再调用 SpawnInitialContent()
     }
@@ -194,15 +208,28 @@ public class TerrainChunker : MonoBehaviour
         float margin = 3f;
         float cursor = chunkStartX + margin;
         
-        // 应用安全距离（例如刚开局的 15 米内不刷怪，防初见杀）
+        // 应用初始安全距离（例如刚开局的 15 米内不刷怪，防初见杀）
         if (cursor < safeStartX)
             cursor = safeStartX;
+        
+        // 加上 Boss 死亡后的免生成距离
+        if (cursor < bossSafeEndX)
+            cursor = bossSafeEndX;
 
         float chunkEnd = chunkStartX + chunkWidth - margin;
 
         while (cursor < chunkEnd && HasMoreEntries(pattern) && !spawnPaused)
         {
             SpawnEntry entry = pattern.entries[spawnCursor];
+
+            // Boss 特殊处理：遇到 Boss 就停止本 chunk 生成，标记 pending 给下一个 chunk
+            // 这解决了 "Boss后面的物体提前生成" 的 BUG
+            if (entry.type == SpawnType.Boss)
+            {
+                bossPending = true;
+                AdvanceCursor(pattern);
+                break;
+            }
 
             // 皇冠已达上限时跳过
             if (entry.type == SpawnType.Crown && totalCrownsSpawned >= MAX_CROWNS)
@@ -241,13 +268,7 @@ public class TerrainChunker : MonoBehaviour
 
     void SpawnSingleObject(Transform chunk, float x, SpawnEntry entry, float minCoinDist)
     {
-        // Boss 特殊处理：不在当前 chunk 生成，标记 pending，等下一个 chunk 时生成
-        // 这样前序物体会先滚出屏幕，不会重叠
-        if (entry.type == SpawnType.Boss)
-        {
-            bossPending = true;
-            return;
-        }
+        // Boss 处理已移到 RespawnContent 控制层，遇到 Boss 直接 break，不会走到这里。
 
         GameObject prefab = GetPrefab(entry.type);
         if (prefab == null) return;

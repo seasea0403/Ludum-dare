@@ -18,6 +18,15 @@ MonoBehaviour:
   coinSpacing: 1.5
   minCoinClusterDistance: 3
   entries:
+  - type: 5
+    hasFog: 0
+    isIndestructible: 0
+    coinCount: 6
+    arcHeight: 0
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
+    coinAroundSpacing: 1.5
   - type: 4
     hasFog: 0
     isIndestructible: 0

@@ -29,6 +29,7 @@ public class WeaponSwitchUI : MonoBehaviour
     private Image         originalBackBg;
     private Vector2       originalFrontPos;
     private Vector2       originalBackPos;
+    private bool          hasInitializedPos = false;
 
     void Awake()
     {
@@ -36,6 +37,11 @@ public class WeaponSwitchUI : MonoBehaviour
         originalBackPanel  = backPanel;
         originalFrontBg    = frontBg;
         originalBackBg     = backBg;
+
+        // 尽早记录锚点，避免有些位置恰好为 (0,0) 时被忽略
+        if (originalFrontPanel != null) originalFrontPos = originalFrontPanel.anchoredPosition;
+        if (originalBackPanel != null)  originalBackPos  = originalBackPanel.anchoredPosition;
+        hasInitializedPos = true;
     }
 
     void OnEnable()
@@ -50,10 +56,6 @@ public class WeaponSwitchUI : MonoBehaviour
 
     void Start()
     {
-        // 记录初始锚点位置（必须在 Start 中，RectTransform 已完成布局后再读）
-        if (frontPanel) originalFrontPos = frontPanel.anchoredPosition;
-        if (backPanel)  originalBackPos  = backPanel.anchoredPosition;
-
         ForceReset();
     }
 
@@ -72,11 +74,12 @@ public class WeaponSwitchUI : MonoBehaviour
         frontBg    = originalFrontBg;
         backBg     = originalBackBg;
 
-        // 恢复位置（仅当位置已记录时才恢复）
-        if (frontPanel && originalFrontPos != Vector2.zero)
-            frontPanel.anchoredPosition = originalFrontPos;
-        if (backPanel && originalBackPos != Vector2.zero)
-            backPanel.anchoredPosition  = originalBackPos;
+        // 恢复位置（确保哪怕位置刚好是 (0,0) 也能恢复）
+        if (hasInitializedPos)
+        {
+            if (frontPanel != null) frontPanel.anchoredPosition = originalFrontPos;
+            if (backPanel != null)  backPanel.anchoredPosition  = originalBackPos;
+        }
 
         // 恢复颜色与层级
         ApplyVisual(frontPanel, frontBg, brightColor);

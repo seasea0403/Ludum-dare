@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Level_02
   m_EditorClassIdentifier: 
   levelIndex: 2
+  minMoveSpeed: 5.5
+  maxMoveSpeed: 6
+  accelerationDuration: 60
   introAnimator: {fileID: 9100000, guid: f5f915e2284adbd448370bb6127cae7f, type: 2}
   introImage: {fileID: 21300000, guid: 994e3c1070b48894e9c4971e2be04788, type: 3}
   introText: Every step hums a signal of our youthful days.
@@ -49,7 +52,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 543cc1f65a215d248bb2d6baa0f89d24, type: 3}
     indestructibleObstacleSprites:
     - {fileID: 0}
-    cycleCount: 10
+    cycleCount: 100
   spawnPattern: {fileID: 11400000, guid: f31be4dd798ff064f98669a0bca0a9a1, type: 2}
   isTutorial: 0
   isFinalLevel: 0

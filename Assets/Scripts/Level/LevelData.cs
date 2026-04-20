@@ -30,6 +30,16 @@ public class LevelData : ScriptableObject
     [Tooltip("关卡编号（1~5）")]
     public int levelIndex;
 
+    [Header("玩家移速配置")]
+    [Tooltip("关卡初始移速")]
+    public float minMoveSpeed = 4.5f;
+
+    [Tooltip("关卡最大移速")]
+    public float maxMoveSpeed = 5.0f;
+
+    [Tooltip("到达最大移速所需时间（秒）")]
+    public float accelerationDuration = 60f;
+
     [Header("关卡前序介绍")]
     [Tooltip("介绍页面显示的动画控制器（用于 Image 的 Animator）")]
     public RuntimeAnimatorController introAnimator;
