@@ -41,6 +41,9 @@ public class LevelData : ScriptableObject
     [TextArea(3, 6)]
     public string introText;
 
+    [Tooltip("介绍第一页动画页背景色")]
+    public Color introAnimBgColor = Color.white;
+
     [Tooltip("拍照后结果页背景色")]
     public Color introResultBgColor = Color.white;
 

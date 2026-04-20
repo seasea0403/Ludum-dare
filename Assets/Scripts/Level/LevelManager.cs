@@ -279,8 +279,16 @@ public class LevelManager : MonoBehaviour
             CurrentLevelIndex++;
         }
 
-        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(true);
         ResetGameState();
+
+        if (CurrentLevel != null && CurrentLevel.isFinalLevel)
+        {
+            if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(false);
+            BeginLevel();
+            return;
+        }
+
+        if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(true);
         ShowIntroThenStart();
     }
 

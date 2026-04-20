@@ -16,6 +16,7 @@ public class LevelIntroUI : MonoBehaviour
 
     [Header("第一页 —— 动画预览")]
     [SerializeField] private GameObject  animPage;
+    [SerializeField] private Image       animBackground;
     [SerializeField] private Image       introImage;
     [SerializeField] private Animator    introImageAnimator;
     [SerializeField] private TextMeshProUGUI introTextField;
@@ -88,6 +89,9 @@ public class LevelIntroUI : MonoBehaviour
             introImage.sprite = levelData.introImage;
             introImage.raycastTarget = false;
         }
+
+        if (animBackground)
+            animBackground.color = levelData.introAnimBgColor;
 
         if (introImageAnimator)
         {
