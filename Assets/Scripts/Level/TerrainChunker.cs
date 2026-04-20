@@ -27,6 +27,7 @@ public class TerrainChunker : MonoBehaviour
 
     [Header("白雾 Sprite")]
     [SerializeField] private Sprite fogSprite;
+    public Sprite FogSprite => fogSprite;
 
     private int totalCrownsSpawned;
     private const int MAX_CROWNS = 3;

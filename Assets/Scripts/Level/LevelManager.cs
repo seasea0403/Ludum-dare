@@ -91,11 +91,45 @@ public class LevelManager : MonoBehaviour
         // 播放当前关卡 BGM
         if (AudioManager.Instance) AudioManager.Instance.PlayBGM(CurrentLevelIndex);
 
-        // CurrentSegment 已设好，现在再生成初始地形内容，确保 obstacle 有正确的 sprite
-        var chunker = FindObjectOfType<TerrainChunker>();
-        if (chunker) chunker.SpawnInitialContent();
+        // 设置玩家的最终关模式
+        if (player) player.isFinalLevel = CurrentLevel.isFinalLevel;
 
-        EventBus.Publish(GameEvents.SceneSegmentChanged, CurrentSegment);
+        if (CurrentLevel.isFinalLevel)
+        {
+            // ——— 最终关特殊流程 ———
+            // 不生成地形障碍物
+            var finalCtrl = FindObjectOfType<FinalLevelController>(true);
+            if (finalCtrl) finalCtrl.Init(CurrentLevel);
+
+            // UI 切换：隐藏 NormalHUD，显示 PhotoHUD
+            var normalHUD = GameObject.Find("NormalHUD");
+            if (normalHUD) normalHUD.SetActive(false);
+
+            var photoHUD = FindObjectOfType<PhotoHUD>(true);
+            if (photoHUD)
+            {
+                photoHUD.gameObject.SetActive(true);
+                photoHUD.Init(CurrentLevel.photoSprites);
+            }
+
+            EventBus.Publish(GameEvents.SceneSegmentChanged, CurrentSegment);
+        }
+        else
+        {
+            // ——— 普通关卡流程 ———
+            // 确保 NormalHUD 显示，PhotoHUD 隐藏
+            var normalHUD = GameObject.Find("NormalHUD");
+            if (normalHUD) normalHUD.SetActive(true);
+
+            var photoHUD = FindObjectOfType<PhotoHUD>(true);
+            if (photoHUD) photoHUD.gameObject.SetActive(false);
+
+            // CurrentSegment 已设好，现在再生成初始地形内容，确保 obstacle 有正确的 sprite
+            var chunker = FindObjectOfType<TerrainChunker>();
+            if (chunker) chunker.SpawnInitialContent();
+
+            EventBus.Publish(GameEvents.SceneSegmentChanged, CurrentSegment);
+        }
     }
 
     /// <summary>
@@ -228,6 +262,10 @@ public class LevelManager : MonoBehaviour
         // 清理残留的 Boss 和 Boss 子弹
         foreach (var boss in FindObjectsOfType<Boss>()) Destroy(boss.gameObject);
         foreach (var bullet in FindObjectsOfType<BossBullet>()) Destroy(bullet.gameObject);
+
+        // 清理最终关的泡泡和猫
+        var finalCtrl = FindObjectOfType<FinalLevelController>(true);
+        if (finalCtrl) finalCtrl.Cleanup();
 
         var chunker = FindObjectOfType<TerrainChunker>();
         if (chunker) chunker.ResetChunks();

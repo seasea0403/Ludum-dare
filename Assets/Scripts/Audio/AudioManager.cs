@@ -44,6 +44,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip sfxLevelIntroText;   // 关卡开头文字
     [SerializeField] private AudioClip sfxTyping;           // 打字机逐字音效
     [SerializeField] private AudioClip sfxBookFlip;         // 翻书音效
+    [SerializeField] private AudioClip sfxCameraShutter;     // 相机快门音效
+    [SerializeField] private AudioClip sfxPolaroidSlide;     // 拍立得相纸滑出音效
 
     [Header("SFX 设置")]
     [SerializeField, Range(0f, 1f)] private float sfxVolume = 0.7f;
@@ -224,6 +226,8 @@ public class AudioManager : MonoBehaviour
     }
     
     public void PlayBookFlip()          => PlaySFX(sfxBookFlip);
+    public void PlayCameraShutter()     => PlaySFX(sfxCameraShutter);
+    public void PlayPolaroidSlide()     => PlaySFX(sfxPolaroidSlide);
 
     /// <summary>按关卡索引播放 BGM（带淡入淡出）</summary>
     public void PlayBGM(int levelIndex)

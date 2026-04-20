@@ -43,4 +43,8 @@ public static class GameEvents
     public const string SceneSegmentChanged = "SceneSegmentChanged";
     public const string TransitionStart     = "TransitionStart";
     public const string GameCompleted       = "GameCompleted";
+
+    // 最终关照片收集
+    public const string PhotoCollected      = "PhotoCollected";
+    public const string AllPhotosCollected  = "AllPhotosCollected";
 }

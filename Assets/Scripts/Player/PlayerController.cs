@@ -51,6 +51,9 @@ public class PlayerController : MonoBehaviour
     private Vector3 spawnPosition;
     private float timer = 0f;
 
+    /// <summary>最终关模式：手动 A/D 移动，无伤害</summary>
+    [HideInInspector] public bool isFinalLevel;
+
     void Awake()
     {
         rb            = GetComponent<Rigidbody2D>();
@@ -127,7 +130,20 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
+        if (isFinalLevel)
+        {
+            float h = Input.GetAxisRaw("Horizontal");
+            rb.velocity = new Vector2(h * moveSpeed, rb.velocity.y);
+
+            // 限制活动范围 -10 ~ 80
+            Vector3 pos = transform.position;
+            if (pos.x < -10f) { pos.x = -10f; transform.position = pos; rb.velocity = new Vector2(0, rb.velocity.y); }
+            else if (pos.x > 80f) { pos.x = 80f; transform.position = pos; rb.velocity = new Vector2(0, rb.velocity.y); }
+        }
+        else
+        {
+            rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
+        }
         ApplyBetterGravity();
     }
 
@@ -221,6 +237,7 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage()
     {
+        if (isFinalLevel) return; // 最终关无伤害
         if (isInvincible || HasShield) 
         {
             if (HasShield)
@@ -269,8 +286,11 @@ public class PlayerController : MonoBehaviour
         var fog = other.GetComponent<FogCover>();
         if (fog != null && !fog.IsRevealed)
         {
-            TakeDamage();
-            other.gameObject.SetActive(false);
+            if (!isFinalLevel)
+            {
+                TakeDamage();
+                other.gameObject.SetActive(false);
+            }
             return;
         }
 

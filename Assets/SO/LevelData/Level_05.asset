@@ -16,15 +16,34 @@ MonoBehaviour:
   introAnimator: {fileID: 0}
   introImage: {fileID: 0}
   introText: Two signals merge into one eternal peace.
-  subtitleLines: []
+  subtitleLines:
+  - text: 'The first light in my life was the moment '
+    delayAfter: 2
+  - text: "I met my parents\u2019 eyes in the delivery room."
+    delayAfter: 2
+  - text: That little house full of plush toys was always my safe haven.
+    delayAfter: 2
+  - text: 'After a lifetime of wandering, '
+    delayAfter: 2
+  - text: "I\u2019ve finally come home to that first warmth."
+    delayAfter: 2
   segmentA:
-    backgroundSprite: {fileID: 21300000, guid: efe056c93cb410342be342364f9149a4, type: 3}
+    backgroundSprite: {fileID: 21300000, guid: 9fbbb7b943c89994cb9d02452bf68912, type: 3}
     destructibleObstacleSprites: []
     indestructibleObstacleSprites: []
     cycleCount: 5
   segmentB:
-    backgroundSprite: {fileID: 21300000, guid: efe056c93cb410342be342364f9149a4, type: 3}
+    backgroundSprite: {fileID: 21300000, guid: 9fbbb7b943c89994cb9d02452bf68912, type: 3}
     destructibleObstacleSprites: []
     indestructibleObstacleSprites: []
     cycleCount: 10
   spawnPattern: {fileID: 11400000, guid: 71d3a954ab9a7724899ea7f83e12b126, type: 2}
+  isFinalLevel: 1
+  photoSprites:
+  - {fileID: 21300000, guid: 17e6b6c8a6952294c93bc2db5b23e94b, type: 3}
+  - {fileID: 21300000, guid: 7798795a1f73c6742bcbec6f227f9468, type: 3}
+  - {fileID: 21300000, guid: fb4e8340c9d45c04c925b2a19df87dcb, type: 3}
+  - {fileID: 21300000, guid: 8287af22124abf14891063de2e397eb2, type: 3}
+  - {fileID: 21300000, guid: c02e6cd3e803b314499c8bfd62a101b4, type: 3}
+  photoBubblePrefab: {fileID: 7887281613028089621, guid: fc7336ba33f002141a9eb32c92a55784, type: 3}
+  catPrefab: {fileID: 6356245896710744163, guid: 20df2f6dc8666bd48b47f313f8f89f40, type: 3}
