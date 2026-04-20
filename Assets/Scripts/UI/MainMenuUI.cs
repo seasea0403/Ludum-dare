@@ -1,5 +1,7 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 
 /// <summary>
@@ -13,6 +15,7 @@ public class MainMenuUI : MonoBehaviour
 
     [Header("关卡按钮")]
     [SerializeField] private Button startButton;
+    [SerializeField] private Animator startButtonAnim;      // Start 按钮旁边的动画 Image
     [SerializeField] private Button[] levelButtons;   // 5 个关卡按钮
 
     [Header("教程/引导页面（点击开始后先展示教学）")]
@@ -21,6 +24,7 @@ public class MainMenuUI : MonoBehaviour
 
     [Header("设置")]
     [SerializeField] private Button settingsButton;
+    [SerializeField] private Animator settingsButtonAnim;   // Settings 按钮旁边的动画 Image
 
     void Start()
     {
@@ -29,19 +33,47 @@ public class MainMenuUI : MonoBehaviour
         if (guidePanel) guidePanel.SetActive(false);
         Time.timeScale = 0f;
 
-        startButton.onClick.AddListener(() => StartGame(0));
-
+        // 为 Start 和关卡按钮统一添加动画交互
+        SetupAnimatedButton(startButton, startButtonAnim, () => StartGame(0));
         for (int i = 0; i < levelButtons.Length; i++)
         {
             int idx = i;
-            levelButtons[i].onClick.AddListener(() => StartGame(idx));
+            SetupAnimatedButton(levelButtons[i], null, () => StartGame(idx));
         }
 
         if (settingsButton)
-            settingsButton.onClick.AddListener(() =>
+            SetupAnimatedButton(settingsButton, settingsButtonAnim, () =>
             {
                 if (SettingsUI.Instance) SettingsUI.Instance.Show(false);
             });
+    }
+
+    /// <summary>为按钮添加 hover/click 动画行为</summary>
+    void SetupAnimatedButton(Button btn, Animator externalAnim, System.Action callback)
+    {
+        if (btn == null) return;
+
+        // 优先用传入的外部 Animator（旁边的 Image），否则 fallback 到按钮自身
+        var animator = externalAnim != null ? externalAnim : btn.GetComponent<Animator>();
+
+        // 保留 Button 本身的颜色过渡（ColorTint），实现按钮本身的深浅变化
+        // 如果 Animator 是挂在外部图片上，那么这两者就不会冲突
+        if (externalAnim != null)
+        {
+            btn.transition = Selectable.Transition.ColorTint;
+        }
+        else
+        {
+            btn.transition = Selectable.Transition.None;
+        }
+        
+        btn.onClick.RemoveAllListeners();
+
+        var handler = btn.gameObject.GetComponent<AnimatedButtonHandler>();
+        if (handler == null)
+            handler = btn.gameObject.AddComponent<AnimatedButtonHandler>();
+
+        handler.Init(animator, callback);
     }
 
     void StartGame(int levelIndex)
