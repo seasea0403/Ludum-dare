@@ -24,8 +24,9 @@ public class TutorialController : MonoBehaviour
         TeachRedQ,
         WaitDestroyRedObstacle,
         WalkToFogObstacle,
-        TeachFogQ,
         TeachFogE,
+        TeachFogQ,
+        TeachFogEBack,
         TeachFogQDestroy,
         WaitDestroyFogObstacle,
         WalkToCoinLine,
@@ -101,6 +102,12 @@ public class TutorialController : MonoBehaviour
         coinHintShown = false;
         chestOpened = false;
 
+        if (player)
+        {
+            player.isTutorialInputRestricted = true;
+            player.isTutorialPaused = false;
+        }
+
         // 第一段要求先按 E 再按 Q(蓝波)，因此开局强制到低频，让 E 切回高频
         if (player != null && player.CurrentFrequency == SignalFrequency.High)
             player.TutorialForceSwitch();
@@ -133,6 +140,12 @@ public class TutorialController : MonoBehaviour
         fogObstacle = null;
         secondCrown = null;
         thirdCrown = null;
+
+        if (player)
+        {
+            player.isTutorialPaused = false;
+            player.isTutorialInputRestricted = false;
+        }
 
         if (TutorialGuideUI.Instance)
             TutorialGuideUI.Instance.HideAll();
@@ -336,15 +349,21 @@ public class TutorialController : MonoBehaviour
             case TutorialPhase.WalkToFogObstacle:
                 if (px >= triggerFogTeachX)
                 {
-                    CurrentPhase = TutorialPhase.TeachFogQ;
+                    CurrentPhase = TutorialPhase.TeachFogE;
                     PausePlayer();
 
-                    // 去泡泡前确保是高频
-                    if (player.CurrentFrequency != SignalFrequency.High)
-                        player.TutorialForceSwitch();
-
                     if (TutorialGuideUI.Instance)
-                        TutorialGuideUI.Instance.ShowKeyWithMessage(TutorialGuideUI.KeyType.Q, "Danger inside! Press Q to scan with blue wave first");
+                        TutorialGuideUI.Instance.ShowKeyWithMessage(TutorialGuideUI.KeyType.E, "Danger inside! Press E to switch to blue wave first");
+                }
+                break;
+
+            case TutorialPhase.TeachFogE:
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    player.TutorialForceSwitch();
+                    CurrentPhase = TutorialPhase.TeachFogQ;
+                    if (TutorialGuideUI.Instance)
+                        TutorialGuideUI.Instance.ShowKeyWithMessage(TutorialGuideUI.KeyType.Q, "Press Q to scan with blue wave and remove the bubble");
                 }
                 break;
 
@@ -352,13 +371,13 @@ public class TutorialController : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.Q))
                 {
                     player.TutorialForceSignal();
-                    CurrentPhase = TutorialPhase.TeachFogE;
+                    CurrentPhase = TutorialPhase.TeachFogEBack;
                     if (TutorialGuideUI.Instance)
                         TutorialGuideUI.Instance.ShowKeyWithMessage(TutorialGuideUI.KeyType.E, "Now press E to switch back to red wave");
                 }
                 break;
 
-            case TutorialPhase.TeachFogE:
+            case TutorialPhase.TeachFogEBack:
                 if (Input.GetKeyDown(KeyCode.E))
                 {
                     player.TutorialForceSwitch();
@@ -496,16 +515,14 @@ public class TutorialController : MonoBehaviour
         CurrentPhase = TutorialPhase.Completed;
         isActive = false;
 
+        if (player)
+        {
+            player.isTutorialPaused = false;
+            player.isTutorialInputRestricted = false;
+        }
+
         if (TutorialGuideUI.Instance)
-            TutorialGuideUI.Instance.ShowMessageTransient("Tutorial Complete!", 1.2f);
-
-        StartCoroutine(FinishTutorialRoutine());
-    }
-
-    IEnumerator FinishTutorialRoutine()
-    {
-        yield return new WaitForSeconds(1.2f);
-        EventBus.Publish(GameEvents.TutorialCompleted);
+            TutorialGuideUI.Instance.HideAll();
     }
 
     void PausePlayer()

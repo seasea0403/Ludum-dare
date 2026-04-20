@@ -57,6 +57,9 @@ public class PlayerController : MonoBehaviour
     /// <summary>教学关暂停：冻结移动和输入，由 TutorialController 控制</summary>
     [HideInInspector] public bool isTutorialPaused;
 
+    /// <summary>教学关启用后，仅在引导暂停时允许指定按键生效</summary>
+    [HideInInspector] public bool isTutorialInputRestricted;
+
     void Awake()
     {
         rb            = GetComponent<Rigidbody2D>();
@@ -88,6 +91,7 @@ public class PlayerController : MonoBehaviour
         jumpCount      = 0;
         fireTimer      = 0;
         isTutorialPaused = false;
+        isTutorialInputRestricted = false;
 
         // 每次重置都恢复到低频（红波/attack），与 WeaponSwitchUI 初始状态保持一致
         CurrentFrequency = SignalFrequency.Low;
@@ -122,6 +126,14 @@ public class PlayerController : MonoBehaviour
         timer += Time.deltaTime;
         if(timer>20f) moveSpeed += Time.deltaTime * 0.018f;
         CheckGround();
+
+        if (isTutorialInputRestricted)
+        {
+            UpdateDistance();
+            fireTimer -= Time.deltaTime;
+            return;
+        }
+
         HandleJump();
         HandleFrequencySwitch();
 

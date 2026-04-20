@@ -41,12 +41,10 @@ public class LevelManager : MonoBehaviour
 
     void OnEnable()
     {
-        EventBus.Subscribe(GameEvents.TutorialCompleted, OnTutorialCompleted);
     }
 
     void OnDisable()
     {
-        EventBus.Unsubscribe(GameEvents.TutorialCompleted, OnTutorialCompleted);
     }
 
     void Start()
@@ -270,8 +268,17 @@ public class LevelManager : MonoBehaviour
     /// <summary>加载下一关（先显示介绍面板）</summary>
     public void LoadNextLevel()
     {
-        if (!HasNextLevel) return;
-        CurrentLevelIndex++;
+        if (isInTutorial)
+        {
+            isInTutorial = false;
+            CurrentLevelIndex = 0;
+        }
+        else
+        {
+            if (!HasNextLevel) return;
+            CurrentLevelIndex++;
+        }
+
         if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(true);
         ResetGameState();
         ShowIntroThenStart();
@@ -301,15 +308,6 @@ public class LevelManager : MonoBehaviour
         if (AudioManager.Instance) AudioManager.Instance.SetGameplaySfxBlocked(false);
         ResetGameState();
         BeginLevel();
-    }
-
-    /// <summary>教学关完成后的回调</summary>
-    private void OnTutorialCompleted(object _)
-    {
-        if (!isInTutorial) return;
-        isInTutorial = false;
-        // 教学完成 → 加载第一关（带 Intro 面板）
-        LoadLevel(0);
     }
 
     /// <summary>原地重置玩家和地形，不需要切换场景</summary>
