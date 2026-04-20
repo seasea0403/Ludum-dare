@@ -18,15 +18,6 @@ MonoBehaviour:
   coinSpacing: 1.5
   minCoinClusterDistance: 3
   entries:
-  - type: 1
-    hasFog: 0
-    isIndestructible: 0
-    coinCount: 8
-    arcHeight: 0
-    hasCoinAround: 0
-    coinAroundCount: 3
-    coinAroundArcHeight: 0
-    coinAroundSpacing: 1.5
   - type: 0
     hasFog: 0
     isIndestructible: 1
@@ -35,6 +26,15 @@ MonoBehaviour:
     hasCoinAround: 1
     coinAroundCount: 2
     coinAroundArcHeight: 1.8
+    coinAroundSpacing: 1.5
+  - type: 1
+    hasFog: 0
+    isIndestructible: 0
+    coinCount: 8
+    arcHeight: 0
+    hasCoinAround: 0
+    coinAroundCount: 3
+    coinAroundArcHeight: 0
     coinAroundSpacing: 1.5
   - type: 0
     hasFog: 1
@@ -154,7 +154,7 @@ MonoBehaviour:
     coinAroundArcHeight: 0
     coinAroundSpacing: 1.5
   - type: 0
-    hasFog: 1
+    hasFog: 0
     isIndestructible: 1
     coinCount: 8
     arcHeight: 2.1
