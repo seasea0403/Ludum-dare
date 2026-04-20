@@ -25,8 +25,10 @@ public class RunnerCamera : MonoBehaviour
     void LateUpdate()
     {
         if (player == null) return;
-        // 水平：跟随玩家X
-        float newX = player.position.x + 2f;
+        // 水平：跟随玩家X，让玩家始终在屏幕左侧偏移 2 单位处
+        float halfWidth = cam.orthographicSize * cam.aspect;
+        float offset = halfWidth - 3f; // 玩家距屏幕左边缘 3 单位
+        float newX = player.position.x + offset;
         // 垂直：固定不变
         transform.position = new Vector3(newX, fixedY, transform.position.z);
     }

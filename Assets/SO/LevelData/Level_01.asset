@@ -18,17 +18,17 @@ MonoBehaviour:
   introText: The road back to the warmest days of my life.
   subtitleLines:
   - text: 'I died in this very hospital, '
-    delayAfter: 8
+    delayAfter: 10
   - text: just a few floors above where I was born.
-    delayAfter: 8
+    delayAfter: 10
   - text: "I walked a lifetime\u2019s journey, "
-    delayAfter: 8
+    delayAfter: 10
   - text: only to return to where it all began.
-    delayAfter: 8
+    delayAfter: 10
   - text: "The only signal I couldn\u2019t let go was my cat, "
-    delayAfter: 8
+    delayAfter: 10
   - text: waiting faithfully at home.
-    delayAfter: 8
+    delayAfter: 100
   segmentA:
     backgroundSprite: {fileID: 21300000, guid: 48a0e551b36ca4e4ab5ba4355beb53c7, type: 3}
     destructibleObstacleSprites:

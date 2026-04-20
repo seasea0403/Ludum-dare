@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2da21e3a14c027148abfb55542d3b6d0, type: 3}
   m_Name: SpawnPattern02
   m_EditorClassIdentifier: 
-  loop: 1
+  loop: 0
   minSpacing: 20
   maxSpacing: 28
   coinSpacing: 1.5

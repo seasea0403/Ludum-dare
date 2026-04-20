@@ -49,16 +49,42 @@ public class WaveAnimator : MonoBehaviour
 
     void DoAttackRaycast(Vector3 origin)
     {
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right, attackRange, attackHitLayers);
+        // 使用 RaycastAll 以支持多种可击破目标
+        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, Vector2.right, attackRange, attackHitLayers);
 
-        if (hit.collider != null && hit.collider.CompareTag("Obstacle"))
+        foreach (var hit in hits)
         {
-            var fog = hit.collider.GetComponent<FogCover>();
-            if (fog == null || fog.IsRevealed)
+            if (hit.collider == null) continue;
+
+            // Boss 子弹（暴露后可被红波击破）
+            var bullet = hit.collider.GetComponent<BossBullet>();
+            if (bullet != null && bullet.IsRevealed)
             {
-                var obs = hit.collider.GetComponent<Obstacle>();
-                if (obs != null)
-                    obs.Shatter();
+                bullet.Shatter();
+                return;
+            }
+
+            // Boss 本体（阶段二可被红波击破）
+            var boss = hit.collider.GetComponent<Boss>();
+            if (boss != null)
+            {
+                boss.Shatter();
+                return;
+            }
+
+            // 普通障碍物
+            if (hit.collider.CompareTag("Obstacle"))
+            {
+                var fog = hit.collider.GetComponent<FogCover>();
+                if (fog == null || fog.IsRevealed)
+                {
+                    var obs = hit.collider.GetComponent<Obstacle>();
+                    if (obs != null)
+                    {
+                        obs.Shatter();
+                        return;
+                    }
+                }
             }
         }
     }

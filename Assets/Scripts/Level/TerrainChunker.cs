@@ -23,6 +23,7 @@ public class TerrainChunker : MonoBehaviour
     [SerializeField] private GameObject chestPrefab;
     [SerializeField] private GameObject crownPrefab;
     [SerializeField] private GameObject bookPrefab;
+    [SerializeField] private GameObject bossPrefab;
 
     [Header("白雾 Sprite")]
     [SerializeField] private Sprite fogSprite;
@@ -32,6 +33,11 @@ public class TerrainChunker : MonoBehaviour
     private SpawnPattern currentPattern;
     private int spawnCursor;
     private float lastCoinEndX = float.NegativeInfinity;
+    private bool spawnPaused;
+    private bool bossPending; // Boss entry 已解析，等待下一个 chunk 生成
+
+    /// <summary>暂停/恢复物体生成（Boss 用）</summary>
+    public void SetSpawnPaused(bool paused) => spawnPaused = paused;
 
     private Camera cam;
     private List<Vector3> initialChunkPositions = new List<Vector3>();
@@ -84,15 +90,19 @@ public class TerrainChunker : MonoBehaviour
         currentPattern = null;
         totalCrownsSpawned = 0;
         lastCoinEndX = float.NegativeInfinity;
+        spawnPaused = false;
+        bossPending = false;
         Physics2D.SyncTransforms();
+        // 初始内容由 LevelManager.BeginLevel 在 CurrentSegment 设好后再调用 SpawnInitialContent()
+    }
 
-        // 立即为初始地形块生成内容，但保留一段安全距离（避免刷在玩家脸上产生初见杀）
+    /// <summary>在 CurrentSegment 设置后调用，生成初始地形内容</summary>
+    public void SpawnInitialContent()
+    {
         for (int i = 0; i < chunks.Count; i++)
         {
             if (chunks[i] != null)
-            {
                 RespawnContent(chunks[i], chunks[i].position.x, 15f);
-            }
         }
     }
 
@@ -162,6 +172,17 @@ public class TerrainChunker : MonoBehaviour
         if (pattern == null || pattern.entries == null || pattern.entries.Length == 0)
             return;
 
+        // Boss 存活期间暂停生成新物体
+        if (spawnPaused) return;
+
+        // 上一个 chunk 解析到了 Boss entry，现在新 chunk 开头生成 Boss
+        if (bossPending)
+        {
+            bossPending = false;
+            SpawnBoss(chunk, chunkStartX);
+            return; // Boss chunk 不生成其他物体
+        }
+
         // 切换关卡/Pattern 时重置游标
         if (pattern != currentPattern)
         {
@@ -178,7 +199,7 @@ public class TerrainChunker : MonoBehaviour
 
         float chunkEnd = chunkStartX + chunkWidth - margin;
 
-        while (cursor < chunkEnd && HasMoreEntries(pattern))
+        while (cursor < chunkEnd && HasMoreEntries(pattern) && !spawnPaused)
         {
             SpawnEntry entry = pattern.entries[spawnCursor];
 
@@ -219,6 +240,14 @@ public class TerrainChunker : MonoBehaviour
 
     void SpawnSingleObject(Transform chunk, float x, SpawnEntry entry, float minCoinDist)
     {
+        // Boss 特殊处理：不在当前 chunk 生成，标记 pending，等下一个 chunk 时生成
+        // 这样前序物体会先滚出屏幕，不会重叠
+        if (entry.type == SpawnType.Boss)
+        {
+            bossPending = true;
+            return;
+        }
+
         GameObject prefab = GetPrefab(entry.type);
         if (prefab == null) return;
 
@@ -260,6 +289,36 @@ public class TerrainChunker : MonoBehaviour
             case SpawnType.Book:     return bookPrefab;
             default:                 return null;
         }
+    }
+
+    /// <summary>生成 Boss（不走对象池，挂在场景根而非地形块下）</summary>
+    private void SpawnBoss(Transform chunk, float x)
+    {
+        if (bossPrefab == null)
+        {
+            Debug.LogWarning("TerrainChunker: bossPrefab 未设置！Boss 不会生成。");
+            return;
+        }
+
+        // Boss 生成在屏幕右侧外一点，并以玩家速度向右移动，看起来固定在画面上
+        float spawnX = x; // 使用 pattern 给出的世界坐标
+        if (cam != null)
+        {
+            float rightEdge = cam.transform.position.x + cam.orthographicSize * cam.aspect;
+            spawnX = rightEdge + 1f; // 从屏幕右侧外一点滑入
+        }
+        Vector3 pos = new Vector3(spawnX, -1f, 0f);
+        var obj = Instantiate(bossPrefab, pos, Quaternion.identity);
+
+        // 把 fogSprite 传给 Boss，让子弹的 FogCover 能正确显示
+        var boss = obj.GetComponent<Boss>();
+        if (boss != null && fogSprite != null)
+            boss.SetFogSprite(fogSprite);
+
+        Debug.Log($"SpawnBoss: 已生成 Boss 在 ({pos.x:F1}, {pos.y:F1})");
+
+        // Boss 存活期间暂停物体生成
+        spawnPaused = true;
     }
 
     /// <summary>生成一簇弧形排列的金币，返回簇的总宽度</summary>

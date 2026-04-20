@@ -172,6 +172,9 @@ public class PlayerController : MonoBehaviour
             ? SignalFrequency.Low
             : SignalFrequency.High;
 
+        // 切换频段时立即重置冷却，避免切换后第一次攻击被延迟
+        fireTimer = 0f;
+
         EventBus.Publish(GameEvents.FrequencyChanged, CurrentFrequency);
     }
 

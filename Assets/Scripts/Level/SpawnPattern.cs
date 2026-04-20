@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum SpawnType { Obstacle, CoinCluster, Chest, Crown, Book }
+public enum SpawnType { Obstacle, CoinCluster, Chest, Crown, Book, Boss }
 
 [System.Serializable]
 public class SpawnEntry

@@ -69,6 +69,8 @@ public class LevelManager : MonoBehaviour
         CurrentCycleCount = 0;
         CurrentSegment = CurrentLevel.segmentA;
         targetCycleCount = CurrentSegment.cycleCount;
+        lastDestructibleIndex   = -1;
+        lastIndestructibleIndex = -1;
 
         // 确保血量 HUD 与实际数值同步（防止过关/重来后 UI 未刷新）
         var player = FindObjectOfType<PlayerController>();
@@ -88,6 +90,10 @@ public class LevelManager : MonoBehaviour
 
         // 播放当前关卡 BGM
         if (AudioManager.Instance) AudioManager.Instance.PlayBGM(CurrentLevelIndex);
+
+        // CurrentSegment 已设好，现在再生成初始地形内容，确保 obstacle 有正确的 sprite
+        var chunker = FindObjectOfType<TerrainChunker>();
+        if (chunker) chunker.SpawnInitialContent();
 
         EventBus.Publish(GameEvents.SceneSegmentChanged, CurrentSegment);
     }
@@ -116,6 +122,8 @@ public class LevelManager : MonoBehaviour
             CurrentCycleCount = 0;
             CurrentSegment = CurrentLevel.segmentB;
             targetCycleCount = CurrentSegment.cycleCount;
+            lastDestructibleIndex   = -1;
+            lastIndestructibleIndex = -1;
 
             EventBus.Publish(GameEvents.SceneSegmentChanged, CurrentSegment);
         }
@@ -136,7 +144,10 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    /// <summary>根据指定的可摧毁性，从当前场景段获取对应 Sprite</summary>
+    private int lastDestructibleIndex   = -1;
+    private int lastIndestructibleIndex = -1;
+
+    /// <summary>根据指定的可摧毁性，从当前场景段获取对应 Sprite（相邻不重复）</summary>
     public void GetObstacleConfig(bool isIndestructible, out Sprite sprite)
     {
         sprite = null;
@@ -144,22 +155,28 @@ public class LevelManager : MonoBehaviour
 
         if (isIndestructible)
         {
-            if (CurrentSegment.indestructibleObstacleSprites != null
-                && CurrentSegment.indestructibleObstacleSprites.Length > 0)
-            {
-                sprite = CurrentSegment.indestructibleObstacleSprites[
-                    Random.Range(0, CurrentSegment.indestructibleObstacleSprites.Length)];
-            }
+            var arr = CurrentSegment.indestructibleObstacleSprites;
+            if (arr == null || arr.Length == 0) return;
+            int idx = PickNonRepeat(arr.Length, ref lastIndestructibleIndex);
+            sprite = arr[idx];
         }
         else
         {
-            if (CurrentSegment.destructibleObstacleSprites != null
-                && CurrentSegment.destructibleObstacleSprites.Length > 0)
-            {
-                sprite = CurrentSegment.destructibleObstacleSprites[
-                    Random.Range(0, CurrentSegment.destructibleObstacleSprites.Length)];
-            }
+            var arr = CurrentSegment.destructibleObstacleSprites;
+            if (arr == null || arr.Length == 0) return;
+            int idx = PickNonRepeat(arr.Length, ref lastDestructibleIndex);
+            sprite = arr[idx];
         }
+    }
+
+    /// <summary>从 count 个元素中随机选一个与 lastIndex 不同的索引</summary>
+    private int PickNonRepeat(int count, ref int lastIndex)
+    {
+        if (count == 1) { lastIndex = 0; return 0; }
+        int idx;
+        do { idx = Random.Range(0, count); } while (idx == lastIndex);
+        lastIndex = idx;
+        return idx;
     }
 
     /// <summary>获取当前背景 Sprite</summary>
@@ -207,6 +224,10 @@ public class LevelManager : MonoBehaviour
         // 停止正在播放的字幕
         var subtitle = FindObjectOfType<SubtitlePlayer>(true);
         if (subtitle) subtitle.Stop();
+
+        // 清理残留的 Boss 和 Boss 子弹
+        foreach (var boss in FindObjectsOfType<Boss>()) Destroy(boss.gameObject);
+        foreach (var bullet in FindObjectsOfType<BossBullet>()) Destroy(bullet.gameObject);
 
         var chunker = FindObjectOfType<TerrainChunker>();
         if (chunker) chunker.ResetChunks();
