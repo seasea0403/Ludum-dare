@@ -76,6 +76,13 @@ public class MainMenuUI : MonoBehaviour
         handler.Init(animator, callback);
     }
 
+    /// <summary>从游戏中途返回主菜单时调用</summary>
+    public void Show()
+    {
+        if (menuPanel) menuPanel.SetActive(true);
+        if (guidePanel) guidePanel.SetActive(false);
+    }
+
     void StartGame(int levelIndex)
     {
         if (menuPanel) menuPanel.SetActive(false);

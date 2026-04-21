@@ -32,6 +32,10 @@ public class GameOverUI : MonoBehaviour
     [SerializeField] private float delayBeforeShow = 1f;
     [SerializeField] private float uiAnimationInterval = 0.3f;
 
+    [Header("返回主菜单按钮")]
+    [SerializeField] private Button          victoryMenuButton;
+    [SerializeField] private Button          defeatMenuButton;
+
     void OnEnable()
     {
         EventBus.Subscribe(GameEvents.PlayerDied,     OnPlayerDied);
@@ -52,6 +56,8 @@ public class GameOverUI : MonoBehaviour
         if (victoryNextButton) victoryNextButton.onClick.AddListener(OnNextLevel);
         if (victoryRetryButton) victoryRetryButton.onClick.AddListener(OnRetry);
         if (defeatRetryButton) defeatRetryButton.onClick.AddListener(OnRetry);
+        if (victoryMenuButton) victoryMenuButton.onClick.AddListener(OnReturnToMenu);
+        if (defeatMenuButton) defeatMenuButton.onClick.AddListener(OnReturnToMenu);
     }
 
     void OnPlayerDied(object data)
@@ -178,5 +184,14 @@ public class GameOverUI : MonoBehaviour
     {
         if (victoryPanel) victoryPanel.SetActive(false);
         LevelManager.Instance.LoadNextLevel();
+    }
+
+    void OnReturnToMenu()
+    {
+        if (victoryPanel) victoryPanel.SetActive(false);
+        if (defeatPanel) defeatPanel.SetActive(false);
+        Time.timeScale = 0f;
+        var mainMenuUI = FindObjectOfType<MainMenuUI>(true);
+        if (mainMenuUI) mainMenuUI.Show();
     }
 }

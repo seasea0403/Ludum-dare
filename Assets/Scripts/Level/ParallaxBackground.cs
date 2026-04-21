@@ -4,6 +4,7 @@ using UnityEngine;
 /// 背景无限滚动：多张背景图拼接循环
 /// 挂在一个空父物体上，子物体放 2~3 张相同宽度的背景 SpriteRenderer
 /// </summary>
+[DefaultExecutionOrder(100)] // 确保背景在 RunnerCamera 更新位置之后再执行视差计算，根除高移速引发的抖动
 public class ParallaxBackground : MonoBehaviour
 {
     [Header("背景块（按从左到右顺序放入）")]

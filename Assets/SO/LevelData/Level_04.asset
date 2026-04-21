@@ -23,17 +23,17 @@ MonoBehaviour:
   introResultBgColor: {r: 0.60784316, g: 0.4745098, b: 0.3529412, a: 1}
   polaroidSprite: {fileID: 21300000, guid: 43565976f01962a47b7b203b0c1f5be5, type: 3}
   subtitleLines:
-  - text: I lived in quiet countryside,
+  - text: After retirement, I took my cat to the countryside,
     delayAfter: 6
-  - text: where warm sunlight always stays.
+  - text: feeling light and gay.
     delayAfter: 6
-  - text: No files nor endless papers,
+  - text: I watched it play on the grass,
     delayAfter: 6
-  - text: "just wheat wind and cat\u2019s gentle lays."
+  - text: every minute felt like a treasure to stay.
     delayAfter: 6
-  - text: hose years brought me pure peace
+  - text: "we gave all to each other\u2019s side, "
     delayAfter: 6
-  - text: through my late peaceful days.
+  - text: "yet when it left, I couldn\u2019t walk away."
     delayAfter: 100
   segmentA:
     backgroundSprite: {fileID: 21300000, guid: 346442ec981537646855d6483f451965, type: 3}

@@ -73,8 +73,9 @@ public class PlayerController : MonoBehaviour
         startX        = transform.position.x;
         spawnPosition = transform.position;
 
-        // 确保物理引擎在 transform 移动后自动同步碰撞体
+        // 确保物理引擎在 transform 移动后自动同步碰撞体，并开启插值根除高移速下的相机跟随抖动
         Physics2D.autoSyncTransforms = true;
+        if (rb) rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
     /// <summary>重置玩家状态到出生点（关卡重试/下一关时调用）</summary>

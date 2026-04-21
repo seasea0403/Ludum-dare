@@ -31,9 +31,9 @@ MonoBehaviour:
     delayAfter: 6
   - text: chasing goals that faded soon.
     delayAfter: 6
-  - text: I learned plain living is
+  - text: I chose to raise a cat,
     delayAfter: 6
-  - text: the most precious boon.
+  - text: to let a new life in my life croon.
     delayAfter: 100
   segmentA:
     backgroundSprite: {fileID: 21300000, guid: efe056c93cb410342be342364f9149a4, type: 3}

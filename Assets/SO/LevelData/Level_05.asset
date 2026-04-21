@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Level_05
   m_EditorClassIdentifier: 
   levelIndex: 5
+  minMoveSpeed: 4.5
+  maxMoveSpeed: 5
+  accelerationDuration: 60
   introAnimator: {fileID: 0}
   introImage: {fileID: 0}
   introText: Two signals merge into one eternal peace.
@@ -20,17 +23,17 @@ MonoBehaviour:
   introResultBgColor: {r: 1, g: 1, b: 1, a: 1}
   polaroidSprite: {fileID: 0}
   subtitleLines:
-  - text: I died in this old hospital,
-    delayAfter: 0
+  - text: 'I died in this old hospital, '
+    delayAfter: 3
   - text: just a few floors above my birth.
-    delayAfter: 0
-  - text: I roamed through all my lifetime,
-    delayAfter: 0
-  - text: back to the origin of earth.
-    delayAfter: 0
-  - text: My heart still holds my dear cat,
-    delayAfter: 0
-  - text: who waits for me at home.
+    delayAfter: 3
+  - text: 'On this path, '
+    delayAfter: 3
+  - text: I found my life plain yet full of worth.
+    delayAfter: 3
+  - text: And here, my only worry faded to the earth,
+    delayAfter: 3
+  - text: for I saw it waiting not far hence.
     delayAfter: 100
   segmentA:
     backgroundSprite: {fileID: 21300000, guid: 9fbbb7b943c89994cb9d02452bf68912, type: 3}
